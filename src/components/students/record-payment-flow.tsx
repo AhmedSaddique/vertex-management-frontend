@@ -37,7 +37,7 @@ export function RecordPaymentFlow({ open, onClose, onSaved }: Props) {
         open
         onClose={close}
         onSaved={onSaved}
-        student={{ id: student.id, name: student.name, remaining: student.remaining, commissionPercent: student.commissionPercent, teacherName: student.teacher.user.name }}
+        student={{ id: student.id, name: student.name, remaining: student.remaining, shares: student.shares.map((sh) => ({ partnerName: sh.partner.name, percent: sh.percent })) }}
       />
     );
   }

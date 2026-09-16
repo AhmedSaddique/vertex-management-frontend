@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BookOpen, Pencil, Plus, Trash2 } from "lucide-react";
+import { BookOpen, Pencil, PieChart, Plus, Trash2 } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
@@ -10,6 +10,7 @@ import { Button, Field, Input, Textarea } from "@/components/ui/form";
 import { Alert, Badge, Card, EmptyState, ErrorBlock, LoadingBlock, PageHeader } from "@/components/ui/display";
 import { useToast } from "@/components/ui/toast";
 import { ConfirmDialog, Dialog } from "@/components/ui/dialog";
+import { ShareDefaultsDialog } from "@/components/subjects/share-defaults-dialog";
 
 export default function SubjectsPage() {
   const { isAdmin } = useAuth();
@@ -18,6 +19,7 @@ export default function SubjectsPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Subject | null>(null);
+  const [splitTarget, setSplitTarget] = useState<Subject | null>(null);
   const [busy, setBusy] = useState(false);
   const toast = useToast();
 
@@ -66,7 +68,7 @@ export default function SubjectsPage() {
     <div>
       <PageHeader
         title="Subjects"
-        description="Courses offered, e.g. Binary, Forex and Crypto. Link teachers to subjects from the Teachers page."
+        description="Courses offered, with the default fee split for new students. Link teachers to subjects from the Teachers page."
         actions={<Button onClick={() => openForm("new")}><Plus className="h-4 w-4" /> Add subject</Button>}
       />
 
@@ -92,6 +94,16 @@ export default function SubjectsPage() {
                 {s.teachers.map((t) => <Badge key={t.id} tone="brand">{t.user.name}</Badge>)}
                 {s.teachers.length === 0 && <span className="text-xs text-slate-400">No teacher linked</span>}
               </div>
+              <div className="mt-3 rounded-lg bg-slate-50 p-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Default fee split</p>
+                  <button className="inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline" onClick={() => setSplitTarget(s)}><PieChart className="h-3.5 w-3.5" /> Edit</button>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {s.shareDefaults.map((d) => <Badge key={d.partnerId} tone="warning">{d.partner.name} {d.percent}%</Badge>)}
+                  <Badge tone="success">Company {Math.round((100 - s.shareDefaults.reduce((a, d) => a + d.percent, 0)) * 100) / 100}%</Badge>
+                </div>
+              </div>
             </Card>
           ))}
         </div>
@@ -114,6 +126,8 @@ export default function SubjectsPage() {
           <Field label="Description"><Textarea value={description} onChange={(e) => setDescription(e.target.value)} /></Field>
         </form>
       </Dialog>
+
+      <ShareDefaultsDialog open={splitTarget !== null} onClose={() => setSplitTarget(null)} onSaved={list.reload} subject={splitTarget} />
 
       <ConfirmDialog
         open={deleteTarget !== null}

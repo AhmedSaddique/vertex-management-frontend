@@ -1,6 +1,13 @@
+import type { Payment } from "./types.finance";
+
+export * from "./types.finance";
+
 export type Role = "ADMIN" | "TEACHER";
 export type StudentStatus = "ACTIVE" | "COMPLETED" | "DROPPED";
 export type PaymentMethod = "CASH" | "BANK_TRANSFER" | "ONLINE" | "OTHER";
+export type PartnerKind = "TEACHER" | "MANAGEMENT";
+export type InstallmentStatus = "PAID" | "PARTIAL" | "PENDING" | "OVERDUE";
+export type Weekday = "MON" | "TUE" | "WED" | "THU" | "FRI" | "SAT" | "SUN";
 
 export interface AuthUser {
   id: string;
@@ -8,6 +15,19 @@ export interface AuthUser {
   email: string;
   role: Role;
   teacherId: string | null;
+  partnerId: string | null;
+}
+
+export interface PartnerRef {
+  id: string;
+  name: string;
+  kind: PartnerKind;
+}
+
+export interface ShareDefault {
+  partnerId: string;
+  percent: number;
+  partner: PartnerRef;
 }
 
 export interface Subject {
@@ -15,30 +35,69 @@ export interface Subject {
   name: string;
   description: string | null;
   teachers: { id: string; user: { name: string } }[];
+  shareDefaults: ShareDefault[];
   _count: { students: number };
 }
 
-export interface TeacherTotals {
+export interface PartnerTotals {
   studentCount: number;
   activeStudentCount: number;
   totalFinalPrice: number;
   totalCollected: number;
   totalRemaining: number;
-  projectedCommission: number;
-  earnedCommission: number;
-  pendingCommission: number;
+  projectedShare: number;
+  earnedShare: number;
+  pendingShare: number;
   totalPaidOut: number;
   balance: number;
+}
+
+export interface Partner extends PartnerRef {
+  isActive: boolean;
+  userId: string | null;
+  teacherId: string | null;
+  user: { id: string; name: string; email: string; isActive: boolean; role: Role } | null;
+  teacher: { id: string; phone: string | null; subjects: { id: string; name: string }[] } | null;
+  totals: PartnerTotals;
 }
 
 export interface Teacher {
   id: string;
   phone: string | null;
-  defaultCommissionPercent: number;
   user: { id: string; name: string; email: string; isActive: boolean };
+  partner: { id: string; name: string; isActive: boolean } | null;
   subjects: { id: string; name: string }[];
-  _count: { students: number };
-  totals: TeacherTotals;
+  _count: { students: number; classSlots: number };
+  totals: PartnerTotals | null;
+}
+
+export interface StudentShare {
+  partnerId: string;
+  partner: PartnerRef;
+  percent: number;
+  earned?: number;
+  projected?: number;
+}
+
+export interface Installment {
+  id: string;
+  studentId: string;
+  dueDate: string;
+  amount: number;
+  paidAmount: number;
+  note: string | null;
+  status: InstallmentStatus;
+  remaining: number;
+  student?: {
+    id: string;
+    name: string;
+    phone: string;
+    fatherPhone: string | null;
+    teacherId: string;
+    status: StudentStatus;
+    subject: { name: string };
+    teacher: { user: { name: string } };
+  };
 }
 
 export interface Student {
@@ -54,114 +113,39 @@ export interface Student {
   fee: number;
   discount: number;
   finalPrice: number;
-  commissionPercent: number;
   status: StudentStatus;
   enrolledAt: string;
   notes: string | null;
   availableSlots: string[];
   createdAt: string;
   subject: { id: string; name: string };
-  teacher: { id: string; user: { name: string }; defaultCommissionPercent?: number };
+  teacher: { id: string; user: { name: string } };
+  shares: StudentShare[];
   paid: number;
   remaining: number;
-  teacherShareEarned: number;
-  teacherShareProjected: number;
+  partnerPercent: number;
+  companyPercent: number;
+  nextDue: { id: string; dueDate: string; remaining: number; status: InstallmentStatus } | null;
+  overdueCount: number;
 }
 
-export interface Payment {
+export interface StudentClassSlot {
   id: string;
-  studentId: string;
-  teacherId: string;
-  amount: number;
-  commissionPercent: number;
-  method: PaymentMethod;
-  note: string | null;
-  paidAt: string;
-  teacherShare: number;
-  companyShare?: number;
-  student?: { id: string; name: string; phone?: string; subject?: { name: string } };
-  teacher?: { id: string; user: { name: string } };
+  title: string | null;
+  days: Weekday[];
+  startTime: string;
+  endTime: string;
+  location: string | null;
+  isActive: boolean;
+  teacher: { user: { name: string } };
+  subject: { name: string };
 }
 
 export interface StudentDetail extends Student {
   payments: Payment[];
+  installments: Installment[];
   classSlots: StudentClassSlot[];
 }
-
-export interface Payout {
-  id: string;
-  teacherId: string;
-  amount: number;
-  note: string | null;
-  paidAt: string;
-  teacher?: { id: string; user: { name: string } };
-}
-
-export interface MonthlyPoint {
-  month: string;
-  label: string;
-  collected: number;
-  teacherShare: number;
-  companyShare: number;
-  payouts: number;
-}
-
-export interface TeacherSummary {
-  teacher: Teacher;
-  totals: TeacherTotals;
-  students: Student[];
-  payouts: Payout[];
-  recentPayments: Payment[];
-  monthly: MonthlyPoint[];
-}
-
-export interface CompanyTotals {
-  totalFinalPrice: number;
-  totalCollected: number;
-  totalOutstanding: number;
-  teacherShare: number;
-  companyShare: number;
-  totalPayouts: number;
-  teacherBalanceOwed: number;
-  netCash: number;
-}
-
-export interface SubjectStat {
-  id: string;
-  name: string;
-  students: number;
-  finalPrice: number;
-  collected: number;
-  remaining: number;
-}
-
-export interface Dashboard {
-  finance: CompanyTotals;
-  students: { total: number; active: number; completed: number; dropped: number };
-  bySubject: SubjectStat[];
-  teachers: {
-    id: string;
-    name: string;
-    subjects: string[];
-    defaultCommissionPercent: number;
-    totals: TeacherTotals;
-  }[];
-  recentPayments: Payment[];
-  recentStudents: Student[];
-  monthly: MonthlyPoint[];
-}
-
-export interface StudentListResponse {
-  students: Student[];
-  summary: { count: number; totalFinalPrice: number; totalPaid: number; totalRemaining: number };
-}
-
-export interface PaymentListResponse {
-  payments: Payment[];
-  summary: { count: number; total: number; teacherShare: number; companyShare: number };
-}
-
-export type Weekday = "MON" | "TUE" | "WED" | "THU" | "FRI" | "SAT" | "SUN";
 
 export interface ClassSlotStudent {
   id: string;
@@ -189,18 +173,6 @@ export interface ClassSlot {
   teacher: { id: string; phone: string | null; user: { name: string; email: string } };
   subject: { id: string; name: string };
   students: ClassSlotStudent[];
-}
-
-export interface StudentClassSlot {
-  id: string;
-  title: string | null;
-  days: Weekday[];
-  startTime: string;
-  endTime: string;
-  location: string | null;
-  isActive: boolean;
-  teacher: { user: { name: string } };
-  subject: { name: string };
 }
 
 export interface TimeSlot {

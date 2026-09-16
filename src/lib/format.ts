@@ -108,3 +108,33 @@ export function slotKeyLabel(key: string): string {
   const [start, end] = key.split("-");
   return start && end ? timeRange(start, end) : key;
 }
+
+export const INSTALLMENT_LABEL: Record<string, string> = {
+  PAID: "Paid",
+  PARTIAL: "Partly paid",
+  PENDING: "Due",
+  OVERDUE: "Overdue",
+};
+
+/** Whole days from today to a date (negative = in the past). */
+export function daysUntil(value: string | Date): number {
+  const d = new Date(value);
+  const today = new Date();
+  const a = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  const b = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  return Math.round((a - b) / 86400000);
+}
+
+export function dueLabel(value: string | Date): string {
+  const n = daysUntil(value);
+  if (n === 0) return "Today";
+  if (n === 1) return "Tomorrow";
+  if (n === -1) return "Yesterday";
+  return n < 0 ? `${-n} days overdue` : `In ${n} days`;
+}
+
+export function addDays(value: string | Date, days: number): string {
+  const d = new Date(value);
+  d.setDate(d.getDate() + days);
+  return dateInput(d);
+}

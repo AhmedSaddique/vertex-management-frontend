@@ -57,7 +57,7 @@ export default function PaymentsPage() {
         <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Stat label="Payments" value={sum.count} />
           <Stat label="Total collected" value={money(sum.total)} tone="brand" />
-          <Stat label="Teacher share" value={money(sum.teacherShare)} tone="warning" />
+          <Stat label="Partner shares" value={money(sum.partnerShare)} tone="warning" />
           <Stat label="Company share" value={money(sum.companyShare)} tone="success" />
         </div>
       )}

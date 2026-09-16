@@ -3,16 +3,17 @@
 import { api } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
-import type { Dashboard, TeacherSummary } from "@/lib/types";
+import type { Dashboard, DueList, PartnerSummary } from "@/lib/types";
 import { Alert, ErrorBlock, LoadingBlock, PageHeader } from "@/components/ui/display";
 import { AdminDashboard } from "@/components/dashboard/admin-dashboard";
-import { TeacherEarnings } from "@/components/teachers/teacher-earnings";
-import { TeacherLedgers } from "@/components/teachers/teacher-ledgers";
+import { FeeDueCard } from "@/components/dashboard/fee-due-card";
+import { PartnerEarnings } from "@/components/partners/partner-earnings";
+import { PartnerLedgers } from "@/components/partners/partner-ledgers";
 import { TodayClasses } from "@/components/schedule/today-classes";
 
 export default function DashboardPage() {
   const { user, isAdmin } = useAuth();
-  return isAdmin ? <AdminHome /> : <TeacherHome teacherId={user?.teacherId ?? null} name={user?.name ?? ""} />;
+  return isAdmin ? <AdminHome /> : <TeacherHome partnerId={user?.partnerId ?? null} name={user?.name ?? ""} />;
 }
 
 function AdminHome() {
@@ -21,24 +22,26 @@ function AdminHome() {
   if (q.error || !q.data) return <ErrorBlock message={q.error ?? "Failed to load"} onRetry={q.reload} />;
   return (
     <div>
-      <PageHeader title="Dashboard" description="Company-wide overview of students, fees and teacher commissions." />
+      <PageHeader title="Dashboard" description="Company-wide overview: fees due, collections, partner shares and expenses." />
       <AdminDashboard data={q.data} />
     </div>
   );
 }
 
-function TeacherHome({ teacherId, name }: { teacherId: string | null; name: string }) {
-  const q = useFetch(() => (teacherId ? api<TeacherSummary>(`/teachers/${teacherId}/summary`) : Promise.resolve(null)), [teacherId]);
-  if (!teacherId) return <Alert tone="error">Your account is not linked to a teacher profile. Please contact the administrator.</Alert>;
+function TeacherHome({ partnerId, name }: { partnerId: string | null; name: string }) {
+  const q = useFetch(() => (partnerId ? api<PartnerSummary>(`/partners/${partnerId}/summary`) : Promise.resolve(null)), [partnerId]);
+  const due = useFetch(() => api<DueList>("/installments/due", { query: { days: 7 } }), []);
+  if (!partnerId) return <Alert tone="error">Your login is not linked to a partner account. Please contact the administrator.</Alert>;
   if (q.loading && !q.data) return <LoadingBlock />;
   if (q.error || !q.data) return <ErrorBlock message={q.error ?? "Failed to load"} onRetry={q.reload} />;
   return (
     <div>
-      <PageHeader title={`Welcome, ${name}`} description="Your students, commission earned and payouts received." />
+      <PageHeader title={`Welcome, ${name}`} description="Your students, fee dates, share earned and payouts received." />
       <div className="space-y-6">
+        {due.data && <FeeDueCard due={due.data} />}
         <TodayClasses />
-        <TeacherEarnings summary={q.data} own />
-        <TeacherLedgers payouts={q.data.payouts} recentPayments={q.data.recentPayments} />
+        <PartnerEarnings summary={q.data} own />
+        <PartnerLedgers payouts={q.data.payouts} recentPayments={q.data.recentPayments} />
       </div>
     </div>
   );

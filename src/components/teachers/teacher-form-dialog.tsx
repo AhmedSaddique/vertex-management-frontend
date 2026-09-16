@@ -21,7 +21,6 @@ export function TeacherFormDialog({ open, onClose, onSaved, subjects, teacher }:
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
-  const [percent, setPercent] = useState("30");
   const [subjectIds, setSubjectIds] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -32,7 +31,6 @@ export function TeacherFormDialog({ open, onClose, onSaved, subjects, teacher }:
     setEmail(teacher?.user.email ?? "");
     setPassword("");
     setPhone(teacher?.phone ?? "");
-    setPercent(String(teacher?.defaultCommissionPercent ?? 30));
     setSubjectIds(teacher?.subjects.map((s) => s.id) ?? []);
     setIsActive(teacher?.user.isActive ?? true);
   }, [open, teacher]);
@@ -49,7 +47,6 @@ export function TeacherFormDialog({ open, onClose, onSaved, subjects, teacher }:
         name,
         email,
         phone: phone || null,
-        defaultCommissionPercent: Number(percent) || 0,
         subjectIds,
         ...(password ? { password } : {}),
         ...(teacher ? { isActive } : {}),
@@ -71,7 +68,7 @@ export function TeacherFormDialog({ open, onClose, onSaved, subjects, teacher }:
       open={open}
       onClose={onClose}
       title={teacher ? "Edit teacher" : "Add teacher"}
-      description={teacher ? "Update profile, login and default share." : "Creates a teacher login with view-only access to their own students and earnings."}
+      description={teacher ? "Update profile and login." : "Creates a teacher login (view-only) and a partner account for their fee share. Default splits are set per subject."}
       footer={
         <>
           <Button variant="outline" onClick={onClose} disabled={saving}>Cancel</Button>
@@ -86,9 +83,6 @@ export function TeacherFormDialog({ open, onClose, onSaved, subjects, teacher }:
           <Field label="Login email" required><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></Field>
           <Field label={teacher ? "New password" : "Password"} required={!teacher} hint={teacher ? "Leave blank to keep the current password." : "At least 6 characters."}>
             <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} required={!teacher} minLength={6} autoComplete="new-password" />
-          </Field>
-          <Field label="Default share (%)" required hint="Applied to new students assigned to this teacher.">
-            <Input type="number" min={0} max={100} step="0.01" value={percent} onChange={(e) => setPercent(e.target.value)} required />
           </Field>
           {teacher && (
             <Field label="Account status">

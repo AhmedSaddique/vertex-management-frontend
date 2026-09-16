@@ -7,10 +7,11 @@ import { Plus, Search } from "lucide-react";
 import { api } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
-import { date, money, percent } from "@/lib/format";
+import { INSTALLMENT_LABEL, date, dueLabel, money, percent } from "@/lib/format";
 import type { StudentListResponse, Subject, Teacher } from "@/lib/types";
 import { Button, Input, Select } from "@/components/ui/form";
 import {
+  Badge,
   Card,
   EmptyState,
   ErrorBlock,
@@ -124,7 +125,7 @@ export default function StudentsPage() {
                 <TH className="text-right">Final price</TH>
                 <TH className="text-right">Paid</TH>
                 <TH className="text-right">Remaining</TH>
-                <TH>Progress</TH>
+                <TH>Next fee due</TH>
                 <TH>Status</TH>
                 <TH>Enrolled</TH>
               </TR>
@@ -140,18 +141,22 @@ export default function StudentsPage() {
                     </TD>
                     <TD>
                       <p className="text-slate-900">{s.subject.name}</p>
-                      <p className="text-xs text-slate-500">{s.teacher.user.name} · {percent(s.commissionPercent)}</p>
+                      <p className="text-xs text-slate-500">{s.teacher.user.name} · partners {percent(s.partnerPercent)} · co. {percent(s.companyPercent)}</p>
                     </TD>
                     <TD className="text-right font-medium text-slate-900">{money(s.finalPrice)}</TD>
                     <TD className="text-right text-emerald-700">{money(s.paid)}</TD>
                     <TD className={`text-right ${s.remaining > 0 ? "font-medium text-amber-700" : "text-slate-400"}`}>{money(s.remaining)}</TD>
                     <TD>
-                      <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-100">
-                          <div className="h-full rounded-full bg-emerald-500" style={{ width: `${pct}%` }} />
+                      {s.remaining <= 0 ? (
+                        <Badge tone="success">Fully paid</Badge>
+                      ) : s.nextDue ? (
+                        <div>
+                          <Badge tone={s.nextDue.status === "OVERDUE" ? "danger" : s.nextDue.status === "PARTIAL" ? "warning" : "info"}>{INSTALLMENT_LABEL[s.nextDue.status]} · {money(s.nextDue.remaining)}</Badge>
+                          <p className="mt-0.5 text-xs text-slate-500">{date(s.nextDue.dueDate)} · {dueLabel(s.nextDue.dueDate)}</p>
                         </div>
-                        <span className="text-xs text-slate-500">{pct}%</span>
-                      </div>
+                      ) : (
+                        <span className="text-xs text-amber-700">No date set · {pct}% paid</span>
+                      )}
                     </TD>
                     <TD><StatusBadge status={s.status} /></TD>
                     <TD className="whitespace-nowrap text-slate-500">{date(s.enrolledAt)}</TD>

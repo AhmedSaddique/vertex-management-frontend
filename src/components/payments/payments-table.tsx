@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
-import { METHOD_LABEL, date, money, percent } from "@/lib/format";
+import { METHOD_LABEL, date, money } from "@/lib/format";
 import type { Payment } from "@/lib/types";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/display";
+import { SharesCell } from "@/components/students/student-payments-table";
 
 interface Props {
   payments: Payment[];
@@ -19,10 +20,9 @@ export function PaymentsTable({ payments, canDelete, onDelete }: Props) {
         <TR>
           <TH>Date</TH>
           <TH>Student</TH>
-          <TH>Teacher</TH>
           <TH className="text-right">Amount</TH>
-          <TH className="text-right">Teacher share</TH>
-          <TH className="text-right">Company share</TH>
+          <TH>Partner shares</TH>
+          <TH className="text-right">Company</TH>
           <TH>Method</TH>
           <TH>Note</TH>
           {canDelete && <TH />}
@@ -34,14 +34,11 @@ export function PaymentsTable({ payments, canDelete, onDelete }: Props) {
             <TD className="whitespace-nowrap">{date(p.paidAt)}</TD>
             <TD>
               <Link href={`/students/${p.studentId}`} className="font-medium text-slate-900 hover:text-brand-700">{p.student?.name}</Link>
-              <p className="text-xs text-slate-500">{p.student?.subject?.name}</p>
-            </TD>
-            <TD>
-              {p.teacher?.user.name} <span className="text-xs text-slate-400">({percent(p.commissionPercent)})</span>
+              <p className="text-xs text-slate-500">{p.student?.subject?.name} · {p.teacher?.user.name}</p>
             </TD>
             <TD className="text-right font-medium text-slate-900">{money(p.amount)}</TD>
-            <TD className="text-right text-amber-700">{money(p.teacherShare)}</TD>
-            <TD className="text-right text-emerald-700">{money(p.companyShare ?? p.amount - p.teacherShare)}</TD>
+            <TD><SharesCell shares={p.shares} /></TD>
+            <TD className="text-right text-emerald-700">{money(p.companyShare)}</TD>
             <TD className="text-slate-500">{METHOD_LABEL[p.method] ?? p.method}</TD>
             <TD className="max-w-[180px] truncate text-slate-500">{p.note || "-"}</TD>
             {canDelete && (

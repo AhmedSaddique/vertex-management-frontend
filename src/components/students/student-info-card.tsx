@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { date, daysLabel, percent, slotKeyLabel, timeRange } from "@/lib/format";
+import { date, daysLabel, slotKeyLabel, timeRange } from "@/lib/format";
 import type { StudentDetail } from "@/lib/types";
 import { Card, CardHeader } from "@/components/ui/display";
 
@@ -14,7 +14,7 @@ export function StudentInfoCard({ student: s }: { student: StudentDetail }) {
     ["Email", s.email || "-"],
     ["Address", s.address || "-"],
     ["Subject", s.subject.name],
-    ["Teacher", `${s.teacher.user.name} (${percent(s.commissionPercent)} share)`],
+    ["Teacher", s.teacher.user.name],
     [
       "Class time",
       slots.length === 0 ? (

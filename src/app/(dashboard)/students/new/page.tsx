@@ -25,7 +25,7 @@ export default function NewStudentPage() {
   async function submit(values: StudentFormValues) {
     setSubmitting(true);
     try {
-      const created = await api<Student>("/students", { method: "POST", body: toPayload(values) });
+      const created = await api<Student>("/students", { method: "POST", body: toPayload(values, { includeInstallments: true }) });
       toast.success("Student added", `${created.name} has been enrolled.`);
       router.push(`/students/${created.id}`);
     } catch (err) {

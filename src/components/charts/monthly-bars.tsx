@@ -4,7 +4,7 @@ import { useState } from "react";
 import { money } from "@/lib/format";
 import type { MonthlyPoint } from "@/lib/types";
 
-export type SeriesKey = "collected" | "teacherShare" | "companyShare" | "payouts";
+export type SeriesKey = "collected" | "partnerShare" | "companyShare" | "payouts" | "expenses";
 export interface Series {
   key: SeriesKey;
   label: string;
@@ -12,7 +12,7 @@ export interface Series {
 }
 
 // Validated categorical pair (CVD-safe): indigo for company, amber for teachers.
-export const CHART_COLORS = { company: "#4f46e5", teacher: "#d97706" };
+export const CHART_COLORS = { company: "#4f46e5", partner: "#d97706" };
 
 function niceCeil(v: number): number {
   if (v <= 0) return 1;

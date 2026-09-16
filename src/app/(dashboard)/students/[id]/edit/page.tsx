@@ -27,7 +27,7 @@ export default function EditStudentPage() {
   async function submit(values: StudentFormValues) {
     setSubmitting(true);
     try {
-      await api(`/students/${params.id}`, { method: "PUT", body: toPayload(values) });
+      await api(`/students/${params.id}`, { method: "PUT", body: toPayload(values, { includeInstallments: false }) });
       toast.success("Student updated");
       router.push(`/students/${params.id}`);
     } catch (err) {

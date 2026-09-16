@@ -6,33 +6,34 @@ import { HandCoins, Pencil } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
-import type { Subject, TeacherSummary } from "@/lib/types";
+import type { PartnerSummary, Subject, Teacher } from "@/lib/types";
 import { Button } from "@/components/ui/form";
 import { Badge, ErrorBlock, LoadingBlock, PageHeader } from "@/components/ui/display";
-import { useToast } from "@/components/ui/toast";
 import { ConfirmDialog } from "@/components/ui/dialog";
-import { TeacherEarnings } from "@/components/teachers/teacher-earnings";
-import { TeacherLedgers } from "@/components/teachers/teacher-ledgers";
+import { useToast } from "@/components/ui/toast";
+import { PartnerEarnings } from "@/components/partners/partner-earnings";
+import { PartnerLedgers } from "@/components/partners/partner-ledgers";
 import { TeacherFormDialog } from "@/components/teachers/teacher-form-dialog";
 import { PayoutDialog } from "@/components/teachers/payout-dialog";
 
 export default function TeacherDetailPage() {
   const params = useParams<{ id: string }>();
   const { isAdmin, user } = useAuth();
-  const q = useFetch(() => api<TeacherSummary>(`/teachers/${params.id}/summary`), [params.id]);
+  const toast = useToast();
+  const teacher = useFetch(() => api<Teacher>(`/teachers/${params.id}`), [params.id]);
+  const summary = useFetch(() => api<PartnerSummary>(`/teachers/${params.id}/summary`), [params.id]);
   const subjects = useFetch(() => (isAdmin ? api<Subject[]>("/subjects") : Promise.resolve([] as Subject[])), [isAdmin]);
   const [editOpen, setEditOpen] = useState(false);
   const [payoutOpen, setPayoutOpen] = useState(false);
   const [deletePayout, setDeletePayout] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const toast = useToast();
 
-  const s = q.data;
-  if (q.loading && !s) return <LoadingBlock />;
-  if (q.error || !s) return <ErrorBlock message={q.error ?? "Teacher not found"} onRetry={q.reload} />;
+  const t = teacher.data;
+  const s = summary.data;
+  if ((teacher.loading && !t) || (summary.loading && !s)) return <LoadingBlock />;
+  if (teacher.error || !t) return <ErrorBlock message={teacher.error ?? "Teacher not found"} onRetry={teacher.reload} />;
 
-  const t = s.teacher;
-  const own = user?.teacherId === t.id;
+  const reloadAll = () => { void teacher.reload(); void summary.reload(); };
 
   async function removePayout() {
     if (!deletePayout) return;
@@ -41,7 +42,7 @@ export default function TeacherDetailPage() {
       await api(`/payouts/${deletePayout}`, { method: "DELETE" });
       setDeletePayout(null);
       toast.success("Payout deleted");
-      await q.reload();
+      reloadAll();
     } catch (err) {
       toast.error("Could not delete payout", errorMessage(err));
     } finally {
@@ -53,7 +54,7 @@ export default function TeacherDetailPage() {
     <div>
       <PageHeader
         title={t.user.name}
-        description={`${t.user.email}${t.phone ? ` · ${t.phone}` : ""}`}
+        description={`${t.user.email}${t.phone ? ` · ${t.phone}` : ""} · ${t._count.students} students · ${t._count.classSlots} classes`}
         backHref={isAdmin ? "/teachers" : undefined}
         actions={
           <>
@@ -61,7 +62,7 @@ export default function TeacherDetailPage() {
             {!t.user.isActive && <Badge tone="danger">Inactive</Badge>}
             {isAdmin && (
               <>
-                <Button size="sm" onClick={() => setPayoutOpen(true)}><HandCoins className="h-4 w-4" /> Pay teacher</Button>
+                {s && <Button size="sm" onClick={() => setPayoutOpen(true)}><HandCoins className="h-4 w-4" /> Pay share</Button>}
                 <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}><Pencil className="h-4 w-4" /> Edit</Button>
               </>
             )}
@@ -69,25 +70,20 @@ export default function TeacherDetailPage() {
         }
       />
 
-      <div className="space-y-6">
-        <TeacherEarnings summary={s} own={own} />
-        <TeacherLedgers payouts={s.payouts} recentPayments={s.recentPayments} canDelete={isAdmin} onDeletePayout={setDeletePayout} />
-      </div>
+      {s ? (
+        <div className="space-y-6">
+          <PartnerEarnings summary={s} own={user?.teacherId === t.id} />
+          <PartnerLedgers payouts={s.payouts} recentPayments={s.recentPayments} canDelete={isAdmin} onDeletePayout={setDeletePayout} />
+        </div>
+      ) : (
+        <ErrorBlock message={summary.error ?? "No partner account for this teacher"} onRetry={summary.reload} />
+      )}
 
       {isAdmin && (
         <>
-          <TeacherFormDialog open={editOpen} onClose={() => setEditOpen(false)} onSaved={q.reload} subjects={subjects.data ?? []} teacher={t} />
-          <PayoutDialog open={payoutOpen} onClose={() => setPayoutOpen(false)} onSaved={q.reload} teacherId={t.id} teachers={[{ id: t.id, name: t.user.name, balance: s.totals.balance }]} />
-          <ConfirmDialog
-            open={deletePayout !== null}
-            onClose={() => setDeletePayout(null)}
-            onConfirm={removePayout}
-            title="Delete payout?"
-            description="The amount will be added back to the teacher payable balance."
-            confirmLabel="Delete payout"
-            danger
-            loading={busy}
-          />
+          <TeacherFormDialog open={editOpen} onClose={() => setEditOpen(false)} onSaved={reloadAll} subjects={subjects.data ?? []} teacher={t} />
+          {s && <PayoutDialog open={payoutOpen} onClose={() => setPayoutOpen(false)} onSaved={reloadAll} partnerId={s.partner.id} partners={[{ id: s.partner.id, name: s.partner.name, balance: s.totals.balance }]} />}
+          <ConfirmDialog open={deletePayout !== null} onClose={() => setDeletePayout(null)} onConfirm={removePayout} title="Delete payout?" description="The amount will be added back to the payable balance." confirmLabel="Delete payout" danger loading={busy} />
         </>
       )}
     </div>
