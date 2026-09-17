@@ -1,10 +1,33 @@
 const TOKEN_KEY = "vertex_token";
 
 /**
- * Backend base URL. The frontend is a separate app and connects to the backend only
- * through this URL (NEXT_PUBLIC_API_URL in .env.local), e.g. http://localhost:5000/api
+ * Normalize the configured API URL.
+ *
+ * NEXT_PUBLIC_API_URL is often pasted without a scheme ("my-api.vercel.app/api").
+ * Without "https://" the browser treats it as a relative path and requests it from the
+ * frontend's own origin, which answers with an HTML 404. Accept every reasonable form:
+ *   "https://host/api"      -> used as is
+ *   "host/api"              -> "https://host/api"
+ *   "//host/api"            -> "https://host/api"
+ *   "/api"                  -> same-origin path
  */
-export const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api").replace(/\/+$/, "");
+function normalizeBaseUrl(raw: string | undefined): string {
+  let v = (raw ?? "").trim();
+  while (v.endsWith("/")) v = v.slice(0, -1);
+  if (!v) return "http://localhost:5000/api";
+
+  const lower = v.toLowerCase();
+  if (lower.startsWith("http://") || lower.startsWith("https://")) return v;
+  if (v.startsWith("//")) return `https:${v}`;
+  if (v.startsWith("/")) return v;
+  return `https://${v}`;
+}
+
+/**
+ * Backend base URL. The frontend is a separate app and connects to the backend only
+ * through this URL (NEXT_PUBLIC_API_URL), e.g. http://localhost:5000/api
+ */
+export const API_BASE_URL = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL);
 
 export function getToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -94,12 +117,12 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
       if (!window.location.pathname.startsWith("/login")) window.location.href = "/login";
     }
     const fallback = !isJson
-      ? `The backend at ${API_BASE_URL} returned ${res.status}. Check NEXT_PUBLIC_API_URL and that the API server is running.`
+      ? `The backend at ${API_BASE_URL} returned ${res.status} instead of JSON. Check NEXT_PUBLIC_API_URL (it must include https://) and that the API is running.`
       : `Request failed (${res.status}).`;
     throw new ApiError(res.status, payload.error ?? fallback, payload.details);
   }
   if (text && !isJson) {
-    throw new ApiError(0, `Unexpected response from ${API_BASE_URL}. Check NEXT_PUBLIC_API_URL points to the backend API.`);
+    throw new ApiError(0, `Unexpected response from ${API_BASE_URL}. Check that NEXT_PUBLIC_API_URL points to the backend API.`);
   }
   return data as T;
 }
