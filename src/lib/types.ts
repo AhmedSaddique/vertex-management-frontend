@@ -19,6 +19,19 @@ export interface AuthUser {
   partnerId: string | null;
 }
 
+/** Result of the enrollment or receipt emails the backend sends. */
+export interface EmailNotification {
+  studentEmailed: boolean;
+  teamEmailed: boolean;
+  skipped?: string;
+}
+
+export interface MailStatus {
+  configured: boolean;
+  driver: string;
+  recipients: number;
+}
+
 export interface PartnerRef {
   id: string;
   name: string;
@@ -133,6 +146,8 @@ export interface Student {
   companyPercent: number;
   nextDue: { id: string; dueDate: string; remaining: number; status: InstallmentStatus } | null;
   overdueCount: number;
+  /** Present on the response that creates a student. */
+  notification?: EmailNotification;
 }
 
 export interface StudentClassSlot {

@@ -1,4 +1,4 @@
-import type { ClassMode, Installment, Partner, PartnerKind, PartnerRef, PartnerTotals, PaymentMethod, Student, StudentStatus } from "./types";
+import type { ClassMode, EmailNotification, Installment, Partner, PartnerKind, PartnerRef, PartnerTotals, PaymentMethod, Student, StudentStatus } from "./types";
 
 export interface PaymentShare {
   partnerId: string;
@@ -146,6 +146,14 @@ export interface Dashboard {
 export interface StudentListResponse {
   students: Student[];
   summary: { count: number; totalFinalPrice: number; totalPaid: number; totalRemaining: number };
+}
+
+export interface PaymentCreatedResponse {
+  payment: Payment;
+  paid: number;
+  remaining: number;
+  nextInstallment: { id: string; dueDate: string; amount: number } | null;
+  notification?: EmailNotification;
 }
 
 export interface PaymentListResponse {

@@ -7,6 +7,7 @@ import { Button, Field, PasswordInput } from "@/components/ui/form";
 import { Badge, Card, CardHeader, PageHeader } from "@/components/ui/display";
 import { useToast } from "@/components/ui/toast";
 import { TimeSlotsCard } from "@/components/settings/time-slots-card";
+import { EmailStatusCard } from "@/components/settings/email-status-card";
 
 export default function SettingsPage() {
   const { user, isAdmin } = useAuth();
@@ -70,7 +71,8 @@ export default function SettingsPage() {
       </div>
 
       {isAdmin && (
-        <div className="mt-6">
+        <div className="mt-6 space-y-6">
+          <EmailStatusCard />
           <TimeSlotsCard />
         </div>
       )}

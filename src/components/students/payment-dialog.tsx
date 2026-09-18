@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "@/lib/api";
-import { addDays, date, dateInput, money, percent } from "@/lib/format";
-import type { PaymentMethod } from "@/lib/types";
+import { addDays, date, dateInput, emailNote, money, percent } from "@/lib/format";
+import type { PaymentCreatedResponse, PaymentMethod } from "@/lib/types";
 import { Button, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { Dialog } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
@@ -60,7 +60,7 @@ export function PaymentDialog({ open, onClose, onSaved, student, installment }: 
     if (amt <= 0 || over) return;
     setSaving(true);
     try {
-      await api("/payments", {
+      const res = await api<PaymentCreatedResponse>("/payments", {
         method: "POST",
         body: {
           studentId: student.id,
@@ -74,7 +74,13 @@ export function PaymentDialog({ open, onClose, onSaved, student, installment }: 
       });
       toast.success(
         "Payment recorded",
-        `${money(amt)} received from ${student.name}.${partial && nextDueDate ? ` Remaining ${money(shortfall)} moved to ${date(nextDueDate)}.` : ""}`,
+        [
+          `${money(amt)} received from ${student.name}.`,
+          partial && nextDueDate ? `Remaining ${money(shortfall)} moved to ${date(nextDueDate)}.` : "",
+          emailNote(res.notification),
+        ]
+          .filter(Boolean)
+          .join(" "),
       );
       onSaved();
       onClose();

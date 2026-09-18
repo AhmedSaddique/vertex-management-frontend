@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, errorMessage } from "@/lib/api";
+import { emailNote } from "@/lib/format";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
 import type { Student, Subject, Teacher } from "@/lib/types";
@@ -26,7 +27,7 @@ export default function NewStudentPage() {
     setSubmitting(true);
     try {
       const created = await api<Student>("/students", { method: "POST", body: toPayload(values, { includeInstallments: true }) });
-      toast.success("Student added", `${created.name} has been enrolled.`);
+      toast.success("Student added", [`${created.name} has been enrolled.`, emailNote(created.notification)].filter(Boolean).join(" "));
       router.push(`/students/${created.id}`);
     } catch (err) {
       toast.error("Could not add student", errorMessage(err));

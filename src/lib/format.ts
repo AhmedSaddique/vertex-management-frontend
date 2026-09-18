@@ -1,4 +1,4 @@
-import type { ClassMode, Weekday } from "./types";
+import type { ClassMode, EmailNotification, Weekday } from "./types";
 
 const CURRENCY = process.env.NEXT_PUBLIC_CURRENCY ?? "Rs";
 
@@ -158,3 +158,12 @@ export const CLASS_MODE_TONE: Record<ClassMode, "success" | "info" | "warning"> 
   ONLINE: "info",
   HYBRID: "warning",
 };
+
+/** One short sentence describing what the backend emailed, for a toast. */
+export function emailNote(n?: EmailNotification): string {
+  if (!n) return "";
+  if (n.studentEmailed && n.teamEmailed) return "Emailed to the student and the team.";
+  if (n.teamEmailed) return n.skipped ? `Emailed to the team (${n.skipped}).` : "Emailed to the team.";
+  if (n.studentEmailed) return "Emailed to the student.";
+  return n.skipped ? `No email sent: ${n.skipped}.` : "No email sent.";
+}
