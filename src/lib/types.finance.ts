@@ -1,4 +1,4 @@
-import type { Installment, Partner, PartnerKind, PartnerRef, PartnerTotals, PaymentMethod, Student, StudentStatus } from "./types";
+import type { ClassMode, Installment, Partner, PartnerKind, PartnerRef, PartnerTotals, PaymentMethod, Student, StudentStatus } from "./types";
 
 export interface PaymentShare {
   partnerId: string;
@@ -20,7 +20,7 @@ export interface Payment {
   partnerShare: number;
   companyShare: number;
   installment?: { id: string; dueDate: string } | null;
-  student?: { id: string; admissionNo?: number; name: string; phone?: string; subject?: { name: string } };
+  student?: { id: string; admissionNo?: number; name: string; phone?: string; classMode?: ClassMode; subject?: { name: string } };
   teacher?: { id: string; user: { name: string } };
 }
 
@@ -64,6 +64,7 @@ export interface PartnerStudentRow {
   name: string;
   phone: string;
   status: StudentStatus;
+  classMode: ClassMode;
   enrolledAt: string;
   subject: { id: string; name: string };
   teacher: { id: string; user: { name: string } };

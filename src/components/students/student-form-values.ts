@@ -1,5 +1,5 @@
 import { dateInput } from "@/lib/format";
-import type { Student } from "@/lib/types";
+import type { ClassMode, Student } from "@/lib/types";
 import type { ShareValue } from "./share-split-editor";
 import type { InstallmentValue } from "./installment-plan-editor";
 
@@ -15,6 +15,7 @@ export interface StudentFormValues {
   fee: string;
   discount: string;
   status: "ACTIVE" | "COMPLETED" | "DROPPED";
+  classMode: ClassMode;
   enrolledAt: string;
   notes: string;
   availableSlots: string[];
@@ -35,6 +36,7 @@ export function initialValues(initial?: Student): StudentFormValues {
     fee: initial ? String(initial.fee) : "",
     discount: initial ? String(initial.discount) : "0",
     status: initial?.status ?? "ACTIVE",
+    classMode: initial?.classMode ?? "PHYSICAL",
     enrolledAt: dateInput(initial?.enrolledAt),
     notes: initial?.notes ?? "",
     availableSlots: initial?.availableSlots ?? [],
@@ -60,6 +62,7 @@ export function toPayload(v: StudentFormValues, opts: { includeInstallments: boo
     fee: Number(v.fee) || 0,
     discount: Number(v.discount) || 0,
     status: v.status,
+    classMode: v.classMode,
     enrolledAt: v.enrolledAt ? new Date(v.enrolledAt).toISOString() : undefined,
     notes: v.notes || null,
     availableSlots: v.availableSlots,

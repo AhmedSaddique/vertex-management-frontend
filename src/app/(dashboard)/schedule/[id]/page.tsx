@@ -7,7 +7,7 @@ import { Pencil, Phone, Trash2, UserPlus } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
-import { WEEKDAYS, WEEKDAY_SHORT, admissionNo, slotKey, slotKeyLabel, timeRange } from "@/lib/format";
+import { CLASS_MODE_LABEL, CLASS_MODE_TONE, WEEKDAYS, WEEKDAY_SHORT, admissionNo, slotKey, slotKeyLabel, timeRange } from "@/lib/format";
 import type { ClassSlot, Subject, Teacher, TimeSlot } from "@/lib/types";
 import { Button } from "@/components/ui/form";
 import { Badge, Card, CardHeader, EmptyState, ErrorBlock, LoadingBlock, PageHeader, StatusBadge, TBody, TD, TH, THead, TR, Table } from "@/components/ui/display";
@@ -96,7 +96,7 @@ export default function ClassDetailPage() {
           ) : (
             <Table>
               <THead>
-                <TR><TH>Adm #</TH><TH>Student</TH><TH>Father name</TH><TH>Phone</TH><TH>Father phone</TH><TH>Available</TH><TH>Status</TH></TR>
+                <TR><TH>Adm #</TH><TH>Student</TH><TH>Father name</TH><TH>Phone</TH><TH>Father phone</TH><TH>Mode</TH><TH>Available</TH><TH>Status</TH></TR>
               </THead>
               <TBody>
                 {slot.students.map((s) => (
@@ -111,6 +111,7 @@ export default function ClassDetailPage() {
                       <a href={`tel:${s.phone}`} className="inline-flex items-center gap-1.5 font-medium text-brand-700 hover:underline"><Phone className="h-3.5 w-3.5" />{s.phone}</a>
                     </TD>
                     <TD>{s.fatherPhone ? <a href={`tel:${s.fatherPhone}`} className="text-brand-700 hover:underline">{s.fatherPhone}</a> : <span className="text-slate-400">-</span>}</TD>
+                    <TD><Badge tone={CLASS_MODE_TONE[s.classMode]}>{CLASS_MODE_LABEL[s.classMode]}</Badge></TD>
                     <TD className="text-xs text-slate-600">
                       {s.availableSlots?.length ? (
                         s.availableSlots.includes(slotKey(slot.startTime, slot.endTime)) ? <Badge tone="success">Free at this time</Badge> : <span title={s.availableSlots.map(slotKeyLabel).join(", ")}>Other times only</span>

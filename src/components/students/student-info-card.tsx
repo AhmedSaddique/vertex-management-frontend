@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { admissionNo, date, daysLabel, slotKeyLabel, timeRange } from "@/lib/format";
+import { CLASS_MODE_LABEL, CLASS_MODE_TONE, admissionNo, date, daysLabel, slotKeyLabel, timeRange } from "@/lib/format";
 import type { StudentDetail } from "@/lib/types";
-import { Card, CardHeader } from "@/components/ui/display";
+import { Badge, Card, CardHeader } from "@/components/ui/display";
 
 export function StudentInfoCard({ student: s }: { student: StudentDetail }) {
   const slots = s.classSlots ?? [];
@@ -15,6 +15,7 @@ export function StudentInfoCard({ student: s }: { student: StudentDetail }) {
     ["Email", s.email || "-"],
     ["Address", s.address || "-"],
     ["Subject", s.subject.name],
+    ["Mode of class", <Badge key="mode" tone={CLASS_MODE_TONE[s.classMode]}>{CLASS_MODE_LABEL[s.classMode]}</Badge>],
     ["Teacher", s.teacher.user.name],
     [
       "Class time",

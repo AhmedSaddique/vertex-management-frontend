@@ -4,6 +4,7 @@ export * from "./types.finance";
 
 export type Role = "ADMIN" | "TEACHER";
 export type StudentStatus = "ACTIVE" | "COMPLETED" | "DROPPED";
+export type ClassMode = "PHYSICAL" | "ONLINE" | "HYBRID";
 export type PaymentMethod = "CASH" | "BANK_TRANSFER" | "ONLINE" | "OTHER";
 export type PartnerKind = "TEACHER" | "MANAGEMENT";
 export type InstallmentStatus = "PAID" | "PARTIAL" | "PENDING" | "OVERDUE";
@@ -96,6 +97,7 @@ export interface Installment {
     fatherPhone: string | null;
     teacherId: string;
     status: StudentStatus;
+    classMode: ClassMode;
     subject: { name: string };
     teacher: { user: { name: string } };
   };
@@ -117,6 +119,7 @@ export interface Student {
   discount: number;
   finalPrice: number;
   status: StudentStatus;
+  classMode: ClassMode;
   enrolledAt: string;
   notes: string | null;
   availableSlots: string[];
@@ -153,6 +156,7 @@ export interface StudentDetail extends Student {
 export interface ClassSlotStudent {
   id: string;
   admissionNo: number;
+  classMode: ClassMode;
   name: string;
   fatherName: string | null;
   phone: string;

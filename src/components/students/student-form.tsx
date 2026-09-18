@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
-import type { Partner, Student, Subject, Teacher } from "@/lib/types";
+import { CLASS_MODES, CLASS_MODE_LABEL } from "@/lib/format";
+import type { ClassMode, Partner, Student, Subject, Teacher } from "@/lib/types";
 import { Button, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { Alert, Card, CardHeader } from "@/components/ui/display";
 import { StudentDetailsCard } from "./student-details-card";
@@ -77,6 +78,11 @@ export function StudentForm({ initial, subjects, teachers, submitting, error, on
                 <option value="ACTIVE">Active</option>
                 <option value="COMPLETED">Completed</option>
                 <option value="DROPPED">Dropped</option>
+              </Select>
+            </Field>
+            <Field label="Mode of class" hint="How this student attends.">
+              <Select value={v.classMode} onChange={(e) => set("classMode", e.target.value as ClassMode)}>
+                {CLASS_MODES.map((m) => <option key={m} value={m}>{CLASS_MODE_LABEL[m]}</option>)}
               </Select>
             </Field>
             <Field label="Enrolled on"><Input type="date" value={v.enrolledAt} onChange={(e) => set("enrolledAt", e.target.value)} /></Field>

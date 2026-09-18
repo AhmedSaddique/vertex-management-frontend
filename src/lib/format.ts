@@ -1,4 +1,4 @@
-import type { Weekday } from "./types";
+import type { ClassMode, Weekday } from "./types";
 
 const CURRENCY = process.env.NEXT_PUBLIC_CURRENCY ?? "Rs";
 
@@ -143,3 +143,18 @@ export function addDays(value: string | Date, days: number): string {
 export function admissionNo(value: number | null | undefined): string {
   return value === null || value === undefined ? "-" : `#${value}`;
 }
+
+export const CLASS_MODES: ClassMode[] = ["PHYSICAL", "ONLINE", "HYBRID"];
+
+export const CLASS_MODE_LABEL: Record<ClassMode, string> = {
+  PHYSICAL: "Physical",
+  ONLINE: "Online",
+  HYBRID: "Hybrid",
+};
+
+/** Badge colour per class mode: in person, remote, or a mix. */
+export const CLASS_MODE_TONE: Record<ClassMode, "success" | "info" | "warning"> = {
+  PHYSICAL: "success",
+  ONLINE: "info",
+  HYBRID: "warning",
+};

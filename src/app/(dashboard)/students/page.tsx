@@ -7,7 +7,7 @@ import { Plus, Search } from "lucide-react";
 import { api } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
-import { INSTALLMENT_LABEL, admissionNo, date, dueLabel, money, percent } from "@/lib/format";
+import { CLASS_MODES, CLASS_MODE_LABEL, CLASS_MODE_TONE, INSTALLMENT_LABEL, admissionNo, date, dueLabel, money, percent } from "@/lib/format";
 import type { StudentListResponse, Subject, Teacher } from "@/lib/types";
 import { Button, Input, Select } from "@/components/ui/form";
 import {
@@ -35,6 +35,7 @@ export default function StudentsPage() {
   const [subjectId, setSubjectId] = useState("");
   const [teacherId, setTeacherId] = useState("");
   const [status, setStatus] = useState("");
+  const [classMode, setClassMode] = useState("");
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(search.trim()), 300);
@@ -44,8 +45,8 @@ export default function StudentsPage() {
   const subjects = useFetch(() => api<Subject[]>("/subjects"), []);
   const teachers = useFetch(() => (isAdmin ? api<Teacher[]>("/teachers") : Promise.resolve([] as Teacher[])), [isAdmin]);
   const list = useFetch(
-    () => api<StudentListResponse>("/students", { query: { search: debounced, subjectId, teacherId, status } }),
-    [debounced, subjectId, teacherId, status],
+    () => api<StudentListResponse>("/students", { query: { search: debounced, subjectId, teacherId, status, classMode } }),
+    [debounced, subjectId, teacherId, status, classMode],
   );
 
   const rows = list.data?.students ?? [];
@@ -97,6 +98,10 @@ export default function StudentsPage() {
                 ))}
               </Select>
             )}
+            <Select value={classMode} onChange={(e) => setClassMode(e.target.value)} className="md:w-36">
+              <option value="">All modes</option>
+              {CLASS_MODES.map((m) => <option key={m} value={m}>{CLASS_MODE_LABEL[m]}</option>)}
+            </Select>
             <Select value={status} onChange={(e) => setStatus(e.target.value)} className="md:w-36">
               <option value="">All status</option>
               <option value="ACTIVE">Active</option>
@@ -123,6 +128,7 @@ export default function StudentsPage() {
                 <TH>Adm #</TH>
                 <TH>Student</TH>
                 <TH>Subject / Teacher</TH>
+                <TH>Mode</TH>
                 <TH className="text-right">Final price</TH>
                 <TH className="text-right">Paid</TH>
                 <TH className="text-right">Remaining</TH>
@@ -145,6 +151,7 @@ export default function StudentsPage() {
                       <p className="text-slate-900">{s.subject.name}</p>
                       <p className="text-xs text-slate-500">{s.teacher.user.name} · partners {percent(s.partnerPercent)} · co. {percent(s.companyPercent)}</p>
                     </TD>
+                    <TD><Badge tone={CLASS_MODE_TONE[s.classMode]}>{CLASS_MODE_LABEL[s.classMode]}</Badge></TD>
                     <TD className="text-right font-medium text-slate-900">{money(s.finalPrice)}</TD>
                     <TD className="text-right text-emerald-700">{money(s.paid)}</TD>
                     <TD className={`text-right ${s.remaining > 0 ? "font-medium text-amber-700" : "text-slate-400"}`}>{money(s.remaining)}</TD>
