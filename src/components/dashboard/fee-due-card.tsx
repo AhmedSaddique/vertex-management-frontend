@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Phone } from "lucide-react";
-import { INSTALLMENT_LABEL, date, dueLabel, money } from "@/lib/format";
+import { INSTALLMENT_LABEL, admissionNo, date, dueLabel, money } from "@/lib/format";
 import type { DueList } from "@/lib/types";
 import { Badge, Card, CardHeader, EmptyState } from "@/components/ui/display";
 
@@ -33,7 +33,7 @@ export function FeeDueCard({ due, days = 7 }: { due: DueList; days?: number }) {
                   {i.student ? (
                     <>
                       <Link href={`/students/${i.student.id}`} className="text-sm font-medium text-slate-900 hover:text-brand-700">{i.student.name}</Link>
-                      <p className="text-xs text-slate-500">{i.student.subject.name} · {i.student.teacher.user.name}</p>
+                      <p className="text-xs text-slate-500">{admissionNo(i.student.admissionNo)} · {i.student.subject.name} · {i.student.teacher.user.name}</p>
                     </>
                   ) : null}
                 </div>

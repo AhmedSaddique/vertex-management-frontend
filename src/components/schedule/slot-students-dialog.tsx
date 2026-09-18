@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
-import { slotKey, slotKeyLabel } from "@/lib/format";
+import { admissionNo, slotKey, slotKeyLabel } from "@/lib/format";
 import type { ClassSlot, StudentListResponse } from "@/lib/types";
 import { Button, Input } from "@/components/ui/form";
 import { Dialog } from "@/components/ui/dialog";
@@ -107,7 +107,7 @@ export function SlotStudentsDialog({ open, onClose, onSaved, slot }: Props) {
                   <input type="checkbox" checked={on} onChange={() => toggle(s.id)} className="h-4 w-4 rounded border-slate-300" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-slate-900">{s.name}</p>
-                    <p className="truncate text-xs text-slate-500">{s.phone}{s.fatherPhone ? ` · father ${s.fatherPhone}` : ""} · {s.subject.name} · {s.teacher.user.name}</p>
+                    <p className="truncate text-xs text-slate-500">{admissionNo(s.admissionNo)} · {s.phone}{s.fatherPhone ? ` · father ${s.fatherPhone}` : ""} · {s.subject.name} · {s.teacher.user.name}</p>
                     {s.availableSlots?.length ? (
                       <p className="mt-0.5 truncate text-[11px] text-slate-400">Available: {s.availableSlots.map(slotKeyLabel).join(", ")}</p>
                     ) : (

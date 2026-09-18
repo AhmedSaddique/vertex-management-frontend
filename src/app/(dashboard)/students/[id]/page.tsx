@@ -7,7 +7,7 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
-import { date, dueLabel, money } from "@/lib/format";
+import { admissionNo, date, dueLabel, money } from "@/lib/format";
 import type { Installment, StudentDetail } from "@/lib/types";
 import { Button } from "@/components/ui/form";
 import { ErrorBlock, LoadingBlock, PageHeader, Stat, StatusBadge } from "@/components/ui/display";
@@ -54,7 +54,7 @@ export default function StudentDetailPage() {
     <div>
       <PageHeader
         title={s.name}
-        description={`${s.subject.name} · ${s.teacher.user.name}`}
+        description={`Admission ${admissionNo(s.admissionNo)} · ${s.subject.name} · ${s.teacher.user.name}`}
         backHref="/students"
         actions={
           <>

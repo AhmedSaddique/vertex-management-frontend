@@ -20,7 +20,7 @@ export interface Payment {
   partnerShare: number;
   companyShare: number;
   installment?: { id: string; dueDate: string } | null;
-  student?: { id: string; name: string; phone?: string; subject?: { name: string } };
+  student?: { id: string; admissionNo?: number; name: string; phone?: string; subject?: { name: string } };
   teacher?: { id: string; user: { name: string } };
 }
 
@@ -60,6 +60,7 @@ export interface MonthlyPoint {
 
 export interface PartnerStudentRow {
   id: string;
+  admissionNo: number;
   name: string;
   phone: string;
   status: StudentStatus;
@@ -79,7 +80,7 @@ export interface PartnerPaymentRow {
   paidAt: string;
   method: PaymentMethod;
   amount: number;
-  student: { id: string; name: string };
+  student: { id: string; admissionNo?: number; name: string };
   percent: number;
   share: number;
 }

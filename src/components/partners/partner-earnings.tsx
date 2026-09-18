@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { HandCoins, PiggyBank, TrendingUp, Wallet } from "lucide-react";
-import { money, percent } from "@/lib/format";
+import { admissionNo, money, percent } from "@/lib/format";
 import type { PartnerSummary } from "@/lib/types";
 import { Card, CardHeader, EmptyState, Stat, StatusBadge, TBody, TD, TH, THead, TR, Table } from "@/components/ui/display";
 import { CHART_COLORS, MonthlyBars } from "@/components/charts/monthly-bars";
@@ -66,7 +66,7 @@ export function PartnerEarnings({ summary, own }: { summary: PartnerSummary; own
                 <TR key={s.id}>
                   <TD>
                     <Link href={`/students/${s.id}`} className="font-medium text-slate-900 hover:text-brand-700">{s.name}</Link>
-                    <p className="text-xs text-slate-500">{s.phone}</p>
+                    <p className="text-xs text-slate-500">{admissionNo(s.admissionNo)} · {s.phone}</p>
                   </TD>
                   <TD>{s.subject.name}<p className="text-xs text-slate-500">{s.teacher.user.name}</p></TD>
                   <TD className="text-right">{money(s.finalPrice)}</TD>

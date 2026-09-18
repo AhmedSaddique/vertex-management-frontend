@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
-import { METHOD_LABEL, date, money } from "@/lib/format";
+import { METHOD_LABEL, admissionNo, date, money } from "@/lib/format";
 import type { Payment } from "@/lib/types";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/display";
 import { SharesCell } from "@/components/students/student-payments-table";
@@ -34,7 +34,7 @@ export function PaymentsTable({ payments, canDelete, onDelete }: Props) {
             <TD className="whitespace-nowrap">{date(p.paidAt)}</TD>
             <TD>
               <Link href={`/students/${p.studentId}`} className="font-medium text-slate-900 hover:text-brand-700">{p.student?.name}</Link>
-              <p className="text-xs text-slate-500">{p.student?.subject?.name} · {p.teacher?.user.name}</p>
+              <p className="text-xs text-slate-500">{admissionNo(p.student?.admissionNo)} · {p.student?.subject?.name} · {p.teacher?.user.name}</p>
             </TD>
             <TD className="text-right font-medium text-slate-900">{money(p.amount)}</TD>
             <TD><SharesCell shares={p.shares} /></TD>

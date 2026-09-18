@@ -138,3 +138,8 @@ export function addDays(value: string | Date, days: number): string {
   d.setDate(d.getDate() + days);
   return dateInput(d);
 }
+
+/** Admission number as shown in the UI, e.g. 1001 -> "#1001". */
+export function admissionNo(value: number | null | undefined): string {
+  return value === null || value === undefined ? "-" : `#${value}`;
+}

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { api } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
-import { money } from "@/lib/format";
+import { admissionNo, money } from "@/lib/format";
 import type { Student, StudentListResponse } from "@/lib/types";
 import { Button, Field, Select } from "@/components/ui/form";
 import { Dialog } from "@/components/ui/dialog";
@@ -60,7 +60,7 @@ export function RecordPaymentFlow({ open, onClose, onSaved }: Props) {
         <Select value={pickId} onChange={(e) => setPickId(e.target.value)} disabled={students.loading}>
           <option value="">{students.loading ? "Loading students..." : "Select student"}</option>
           {unpaid.map((s) => (
-            <option key={s.id} value={s.id}>{s.name} · {s.subject.name} · remaining {money(s.remaining)}</option>
+            <option key={s.id} value={s.id}>{admissionNo(s.admissionNo)} {s.name} · {s.subject.name} · remaining {money(s.remaining)}</option>
           ))}
         </Select>
       </Field>

@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { date, daysLabel, slotKeyLabel, timeRange } from "@/lib/format";
+import { admissionNo, date, daysLabel, slotKeyLabel, timeRange } from "@/lib/format";
 import type { StudentDetail } from "@/lib/types";
 import { Card, CardHeader } from "@/components/ui/display";
 
 export function StudentInfoCard({ student: s }: { student: StudentDetail }) {
   const slots = s.classSlots ?? [];
   const info: [string, React.ReactNode][] = [
+    ["Admission no.", <span key="adm" className="font-semibold tabular-nums">{admissionNo(s.admissionNo)}</span>],
     ["Phone", <a key="p" href={`tel:${s.phone}`} className="text-brand-700 hover:underline">{s.phone}</a>],
     ["Father name", s.fatherName || "-"],
     ["Father phone", s.fatherPhone ? <a key="fp" href={`tel:${s.fatherPhone}`} className="text-brand-700 hover:underline">{s.fatherPhone}</a> : "-"],

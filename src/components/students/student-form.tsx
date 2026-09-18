@@ -55,7 +55,7 @@ export function StudentForm({ initial, subjects, teachers, submitting, error, on
   return (
     <form onSubmit={(e) => { e.preventDefault(); if (!blocked) onSubmit(v); }} className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
-        <StudentDetailsCard v={v} set={set} />
+        <StudentDetailsCard v={v} set={set} admissionNo={initial?.admissionNo} />
 
         <Card>
           <CardHeader title="Enrollment" description="Subject, assigned teacher, status and when the student can attend." />

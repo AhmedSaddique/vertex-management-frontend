@@ -7,7 +7,7 @@ import { Pencil, Phone, Trash2, UserPlus } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
-import { WEEKDAYS, WEEKDAY_SHORT, slotKey, slotKeyLabel, timeRange } from "@/lib/format";
+import { WEEKDAYS, WEEKDAY_SHORT, admissionNo, slotKey, slotKeyLabel, timeRange } from "@/lib/format";
 import type { ClassSlot, Subject, Teacher, TimeSlot } from "@/lib/types";
 import { Button } from "@/components/ui/form";
 import { Badge, Card, CardHeader, EmptyState, ErrorBlock, LoadingBlock, PageHeader, StatusBadge, TBody, TD, TH, THead, TR, Table } from "@/components/ui/display";
@@ -96,11 +96,12 @@ export default function ClassDetailPage() {
           ) : (
             <Table>
               <THead>
-                <TR><TH>Student</TH><TH>Father name</TH><TH>Phone</TH><TH>Father phone</TH><TH>Available</TH><TH>Status</TH></TR>
+                <TR><TH>Adm #</TH><TH>Student</TH><TH>Father name</TH><TH>Phone</TH><TH>Father phone</TH><TH>Available</TH><TH>Status</TH></TR>
               </THead>
               <TBody>
                 {slot.students.map((s) => (
                   <TR key={s.id}>
+                    <TD className="font-semibold text-slate-900 tabular-nums">{admissionNo(s.admissionNo)}</TD>
                     <TD>
                       <Link href={`/students/${s.id}`} className="font-medium text-slate-900 hover:text-brand-700">{s.name}</Link>
                       {s.teacherId !== slot.teacherId && <p className="text-xs text-amber-600">Assigned to another teacher</p>}

@@ -7,7 +7,7 @@ import { Plus, Search } from "lucide-react";
 import { api } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
-import { INSTALLMENT_LABEL, date, dueLabel, money, percent } from "@/lib/format";
+import { INSTALLMENT_LABEL, admissionNo, date, dueLabel, money, percent } from "@/lib/format";
 import type { StudentListResponse, Subject, Teacher } from "@/lib/types";
 import { Button, Input, Select } from "@/components/ui/form";
 import {
@@ -80,7 +80,7 @@ export default function StudentsPage() {
         <div className="flex flex-col gap-3 border-b border-slate-100 p-4 md:flex-row md:items-center">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <Input className="pl-9" placeholder="Search by name, father name, phone or email" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input className="pl-9" placeholder="Search by admission number, name, father name, phone or email" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           <div className="grid grid-cols-2 gap-3 md:flex">
             <Select value={subjectId} onChange={(e) => setSubjectId(e.target.value)} className="md:w-40">
@@ -120,6 +120,7 @@ export default function StudentsPage() {
           <Table>
             <THead>
               <TR>
+                <TH>Adm #</TH>
                 <TH>Student</TH>
                 <TH>Subject / Teacher</TH>
                 <TH className="text-right">Final price</TH>
@@ -135,6 +136,7 @@ export default function StudentsPage() {
                 const pct = s.finalPrice > 0 ? Math.min(100, Math.round((s.paid / s.finalPrice) * 100)) : 100;
                 return (
                   <TR key={s.id} onClick={() => router.push(`/students/${s.id}`)}>
+                    <TD className="font-semibold text-slate-900 tabular-nums">{admissionNo(s.admissionNo)}</TD>
                     <TD>
                       <p className="font-medium text-slate-900">{s.name}</p>
                       <p className="text-xs text-slate-500">{s.phone}{s.fatherName ? ` · s/o ${s.fatherName}` : ""}{s.fatherPhone ? ` · father ${s.fatherPhone}` : ""}</p>
