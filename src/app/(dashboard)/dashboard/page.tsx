@@ -9,6 +9,7 @@ import { AdminDashboard } from "@/components/dashboard/admin-dashboard";
 import { FeeDueCard } from "@/components/dashboard/fee-due-card";
 import { PartnerEarnings } from "@/components/partners/partner-earnings";
 import { PartnerLedgers } from "@/components/partners/partner-ledgers";
+import { PartnerTradingCard } from "@/components/partners/partner-trading-card";
 import { TodayClasses } from "@/components/schedule/today-classes";
 
 export default function DashboardPage() {
@@ -42,6 +43,7 @@ function TeacherHome({ partnerId, name }: { partnerId: string | null; name: stri
         <TodayClasses />
         <PartnerEarnings summary={q.data} own />
         <PartnerLedgers payouts={q.data.payouts} recentPayments={q.data.recentPayments} />
+        <PartnerTradingCard rows={q.data.tradingPayouts} />
       </div>
     </div>
   );

@@ -29,13 +29,14 @@ export default function FinancePage() {
         <Stat label="Total fees (final price)" value={money(f.totalFinalPrice)} hint={`${d.students.total} students enrolled`} />
         <Stat label="Collected" value={money(f.totalCollected)} hint={`${collectedPct}% of total fees`} tone="brand" />
         <Stat label="Outstanding receivable" value={money(f.totalOutstanding)} hint="Fees not yet paid by students" tone="warning" />
-        <Stat label="Cash in hand" value={money(f.netCash)} hint="Collected - payouts - expenses" tone="success" />
+        <Stat label="Trading income" value={money(f.tradingTotal)} hint={`${money(f.tradingPartnerShare)} to members · ${money(f.companyTradingShare)} to company`} tone="brand" />
+        <Stat label="Cash in hand" value={money(f.netCash)} hint="Fees + trading - payouts - expenses" tone="success" />
       </div>
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Company share" value={money(f.companyShare)} hint="Collected minus partner shares" tone="success" />
+        <Stat label="Company income" value={money(f.companyShare)} hint={`${money(f.companyFeeShare)} from fees · ${money(f.companyTradingShare)} from trading`} tone="success" />
         <Stat label="Expenses" value={money(f.totalExpenses)} hint="Company running costs" tone="danger" />
-        <Stat label="Company balance" value={money(f.companyBalance)} hint="Company share minus expenses" tone={f.companyBalance < 0 ? "danger" : "brand"} />
-        <Stat label="Owed to partners" value={money(f.partnerBalanceOwed)} hint={`${money(f.partnerShare)} earned - ${money(f.totalPayouts)} paid`} tone={f.partnerBalanceOwed > 0 ? "warning" : "neutral"} />
+        <Stat label="Company balance" value={money(f.companyBalance)} hint="Company income minus expenses" tone={f.companyBalance < 0 ? "danger" : "brand"} />
+        <Stat label="Owed to partners" value={money(f.partnerBalanceOwed)} hint={`${money(f.partnerShare + f.tradingPartnerShare)} earned - ${money(f.totalPayouts)} paid`} tone={f.partnerBalanceOwed > 0 ? "warning" : "neutral"} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -45,7 +46,7 @@ export default function FinancePage() {
             <MonthlyBars data={d.monthly} series={[{ key: "companyShare", label: "Company share", color: CHART_COLORS.company }, { key: "partnerShare", label: "Partner shares", color: CHART_COLORS.partner }]} />
           </div>
           <Table>
-            <THead><TR><TH>Month</TH><TH className="text-right">Collected</TH><TH className="text-right">Company</TH><TH className="text-right">Partners</TH><TH className="text-right">Payouts</TH><TH className="text-right">Expenses</TH></TR></THead>
+            <THead><TR><TH>Month</TH><TH className="text-right">Collected</TH><TH className="text-right">Company</TH><TH className="text-right">Partners</TH><TH className="text-right">Trading</TH><TH className="text-right">Payouts</TH><TH className="text-right">Expenses</TH></TR></THead>
             <TBody>
               {d.monthly.map((m) => (
                 <TR key={m.month}>
@@ -53,6 +54,7 @@ export default function FinancePage() {
                   <TD className="text-right">{money(m.collected)}</TD>
                   <TD className="text-right text-emerald-700">{money(m.companyShare)}</TD>
                   <TD className="text-right text-amber-700">{money(m.partnerShare)}</TD>
+                  <TD className="text-right text-brand-700">{money(m.trading)}</TD>
                   <TD className="text-right">{money(m.payouts)}</TD>
                   <TD className="text-right text-rose-700">{money(m.expenses)}</TD>
                 </TR>

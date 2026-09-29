@@ -13,6 +13,7 @@ import { ConfirmDialog } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 import { PartnerEarnings } from "@/components/partners/partner-earnings";
 import { PartnerLedgers } from "@/components/partners/partner-ledgers";
+import { PartnerTradingCard } from "@/components/partners/partner-trading-card";
 import { TeacherFormDialog } from "@/components/teachers/teacher-form-dialog";
 import { PayoutDialog } from "@/components/teachers/payout-dialog";
 
@@ -74,6 +75,7 @@ export default function TeacherDetailPage() {
         <div className="space-y-6">
           <PartnerEarnings summary={s} own={user?.teacherId === t.id} />
           <PartnerLedgers payouts={s.payouts} recentPayments={s.recentPayments} canDelete={isAdmin} onDeletePayout={setDeletePayout} />
+          <PartnerTradingCard rows={s.tradingPayouts} />
         </div>
       ) : (
         <ErrorBlock message={summary.error ?? "No partner account for this teacher"} onRetry={summary.reload} />

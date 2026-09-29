@@ -16,8 +16,8 @@ export function AdminDashboard({ data }: { data: Dashboard }) {
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Total collected" value={money(f.totalCollected)} hint={`${money(f.totalOutstanding)} still to collect`} tone="brand" icon={<Wallet className="h-5 w-5" />} />
-        <Stat label="Company balance" value={money(f.companyBalance)} hint={`${money(f.companyShare)} company share - ${money(f.totalExpenses)} expenses`} tone={f.companyBalance < 0 ? "danger" : "success"} icon={<Building2 className="h-5 w-5" />} />
-        <Stat label="Owed to partners" value={money(f.partnerBalanceOwed)} hint={`${money(f.partnerShare)} earned, ${money(f.totalPayouts)} paid`} tone="warning" icon={<HandCoins className="h-5 w-5" />} />
+        <Stat label="Company balance" value={money(f.companyBalance)} hint={`${money(f.companyShare)} income (fees + trading) - ${money(f.totalExpenses)} expenses`} tone={f.companyBalance < 0 ? "danger" : "success"} icon={<Building2 className="h-5 w-5" />} />
+        <Stat label="Owed to partners" value={money(f.partnerBalanceOwed)} hint={`${money(f.partnerShare + f.tradingPartnerShare)} earned, ${money(f.totalPayouts)} paid`} tone="warning" icon={<HandCoins className="h-5 w-5" />} />
         <Stat label="Students" value={data.students.total} hint={`${data.students.active} active · ${data.students.completed} completed · ${data.students.dropped} dropped`} icon={<GraduationCap className="h-5 w-5" />} />
       </div>
 

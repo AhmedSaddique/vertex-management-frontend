@@ -56,6 +56,9 @@ export interface MonthlyPoint {
   companyShare: number;
   payouts: number;
   expenses: number;
+  trading: number;
+  tradingPartnerShare: number;
+  tradingCompanyShare: number;
 }
 
 export interface PartnerStudentRow {
@@ -92,6 +95,7 @@ export interface PartnerSummary {
   students: PartnerStudentRow[];
   payouts: Payout[];
   recentPayments: PartnerPaymentRow[];
+  tradingPayouts: PartnerTradingRow[];
   monthly: MonthlyPoint[];
 }
 
@@ -100,12 +104,62 @@ export interface CompanyTotals {
   totalCollected: number;
   totalOutstanding: number;
   partnerShare: number;
+  /** Company share of student fees only. */
+  companyFeeShare: number;
+  tradingTotal: number;
+  tradingPartnerShare: number;
+  companyTradingShare: number;
+  /** Fees plus trading. */
   companyShare: number;
   totalExpenses: number;
   companyBalance: number;
   totalPayouts: number;
   partnerBalanceOwed: number;
   netCash: number;
+}
+
+export interface TradingShare {
+  partnerId: string;
+  partnerName: string;
+  percent: number;
+  amount: number;
+}
+
+export interface TradingPayout {
+  id: string;
+  title: string | null;
+  amount: number;
+  occurredAt: string;
+  note: string | null;
+  shares: TradingShare[];
+  partnerShare: number;
+  companyShare: number;
+}
+
+export interface TradingListResponse {
+  payouts: TradingPayout[];
+  summary: {
+    count: number;
+    total: number;
+    partnerShare: number;
+    companyShare: number;
+    byPartner: { partnerId: string; partnerName: string; amount: number }[];
+  };
+}
+
+export interface TradingDefaults {
+  shares: { partnerId: string; percent: number; partner: PartnerRef & { isActive: boolean } }[];
+  partnerPercent: number;
+  companyPercent: number;
+}
+
+export interface PartnerTradingRow {
+  id: string;
+  title: string | null;
+  occurredAt: string;
+  total: number;
+  percent: number;
+  share: number;
 }
 
 export interface DueList {
@@ -141,6 +195,7 @@ export interface Dashboard {
   recentStudents: Student[];
   monthly: MonthlyPoint[];
   due: DueList;
+  trading: { summary: TradingListResponse["summary"]; recent: TradingPayout[] };
 }
 
 export interface StudentListResponse {

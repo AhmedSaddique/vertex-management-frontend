@@ -15,9 +15,15 @@ export function PartnerEarnings({ summary, own }: { summary: PartnerSummary; own
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Payable balance" value={money(t.balance)} hint={t.balance < 0 ? "Advance taken beyond earnings" : "Earned minus paid out"} tone={t.balance < 0 ? "danger" : "brand"} icon={<Wallet className="h-5 w-5" />} />
-        <Stat label="Earned so far" value={money(t.earnedShare)} hint={`Share of ${money(t.totalCollected)} collected`} tone="success" icon={<TrendingUp className="h-5 w-5" />} />
+        <Stat
+          label="Earned so far"
+          value={money(t.totalEarned)}
+          hint={`${money(t.earnedShare)} from courses · ${money(t.tradingShare)} from trading`}
+          tone="success"
+          icon={<TrendingUp className="h-5 w-5" />}
+        />
         <Stat label="Paid out" value={money(t.totalPaidOut)} hint={`${summary.payouts.length} payout${summary.payouts.length === 1 ? "" : "s"}`} icon={<HandCoins className="h-5 w-5" />} />
-        <Stat label="Full share" value={money(t.projectedShare)} hint={`${money(t.pendingShare)} more once all fees are collected`} tone="warning" icon={<PiggyBank className="h-5 w-5" />} />
+        <Stat label="Full course share" value={money(t.projectedShare)} hint={`${money(t.pendingShare)} more once all fees are collected`} tone="warning" icon={<PiggyBank className="h-5 w-5" />} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

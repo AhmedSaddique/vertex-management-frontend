@@ -60,8 +60,13 @@ export interface PartnerTotals {
   totalCollected: number;
   totalRemaining: number;
   projectedShare: number;
+  /** Share earned on student fees collected. */
   earnedShare: number;
   pendingShare: number;
+  /** Share earned from trading payouts. */
+  tradingShare: number;
+  /** Course share plus trading share. */
+  totalEarned: number;
   totalPaidOut: number;
   balance: number;
 }
