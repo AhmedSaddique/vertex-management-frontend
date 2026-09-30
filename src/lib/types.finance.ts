@@ -115,7 +115,47 @@ export interface CompanyTotals {
   companyBalance: number;
   totalPayouts: number;
   partnerBalanceOwed: number;
+  /** Money taken from the company and not yet paid back. */
+  loansOutstanding: number;
   netCash: number;
+}
+
+export type LoanStatus = "OPEN" | "PARTIAL" | "CLEARED";
+
+export interface LoanRepayment {
+  id: string;
+  loanId: string;
+  amount: number;
+  paidAt: string;
+  note: string | null;
+}
+
+/** Money taken from the company for a while and paid back later. */
+export interface CompanyLoan {
+  id: string;
+  partnerId: string | null;
+  partner: PartnerRef | null;
+  borrowerName: string;
+  amount: number;
+  takenAt: string;
+  reason: string | null;
+  note: string | null;
+  repayments: LoanRepayment[];
+  repaid: number;
+  outstanding: number;
+  status: LoanStatus;
+}
+
+export interface LoanListResponse {
+  loans: CompanyLoan[];
+  summary: {
+    count: number;
+    taken: number;
+    repaid: number;
+    outstanding: number;
+    openCount: number;
+    byBorrower: { key: string; name: string; partnerId: string | null; taken: number; repaid: number; outstanding: number }[];
+  };
 }
 
 export interface TradingShare {

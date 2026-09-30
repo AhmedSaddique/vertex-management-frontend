@@ -167,3 +167,15 @@ export function emailNote(n?: EmailNotification): string {
   if (n.studentEmailed) return "Emailed to the student.";
   return n.skipped ? `No email sent: ${n.skipped}.` : "No email sent.";
 }
+
+export const LOAN_STATUS_LABEL: Record<string, string> = {
+  OPEN: "Not paid back",
+  PARTIAL: "Partly paid back",
+  CLEARED: "Cleared",
+};
+
+export const LOAN_STATUS_TONE: Record<string, "danger" | "warning" | "success"> = {
+  OPEN: "danger",
+  PARTIAL: "warning",
+  CLEARED: "success",
+};

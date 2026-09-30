@@ -33,6 +33,8 @@ Open http://localhost:3000 and sign in (admin@vertex.com / admin123).
 | /teachers, /teachers/:id | manage teachers, pay their share | own account page |
 | /partners, /partners/:id | all fee-share partners, balances, payouts | - |
 | /expenses | company running costs | - |
+| /trading | trading income and its split | - |
+| /loans | money taken from the company and paid back | - |
 | /schedule, /schedule/:id | time grid, by-day and Availability views; add classes, assign students | own classes with student contact numbers |
 | /payments | all fee payments | own students' payments |
 | /payouts | pay teachers, history | own payouts |
