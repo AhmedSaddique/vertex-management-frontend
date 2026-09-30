@@ -10,7 +10,7 @@ import { useAuth } from "@/lib/auth-context";
 import { CLASS_MODE_LABEL, CLASS_MODE_TONE, WEEKDAYS, WEEKDAY_SHORT, admissionNo, slotKey, slotKeyLabel, timeRange } from "@/lib/format";
 import type { ClassSlot, Subject, Teacher, TimeSlot } from "@/lib/types";
 import { Button } from "@/components/ui/form";
-import { Badge, Card, CardHeader, EmptyState, ErrorBlock, LoadingBlock, PageHeader, StatusBadge, TBody, TD, TH, THead, TR, Table } from "@/components/ui/display";
+import { Badge, Card, CardHeader, EmptyState, ErrorBlock, LoadingBlock, PageHeader, TBody, TD, TH, THead, TR, Table } from "@/components/ui/display";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 import { slotTitle } from "@/components/schedule/slot-card";
@@ -90,13 +90,13 @@ export default function ClassDetailPage() {
         </Card>
 
         <Card className="lg:col-span-2">
-          <CardHeader title="Students in this class" description={`${slot.students.length} student${slot.students.length === 1 ? "" : "s"} with contact numbers`} />
+          <CardHeader title="Students in this class" description={`${slot.students.length} student${slot.students.length === 1 ? "" : "s"}. Students who complete or drop the course leave the class automatically.`} />
           {slot.students.length === 0 ? (
             <EmptyState title="No students assigned yet" description={isAdmin ? "Use Manage students to add them." : undefined} />
           ) : (
             <Table>
               <THead>
-                <TR><TH>Adm #</TH><TH>Student</TH><TH>Father name</TH><TH>Phone</TH><TH>Father phone</TH><TH>Mode</TH><TH>Available</TH><TH>Status</TH></TR>
+                <TR><TH>Adm #</TH><TH>Student</TH><TH>Father name</TH><TH>Phone</TH><TH>Father phone</TH><TH>Mode</TH><TH>Available</TH></TR>
               </THead>
               <TBody>
                 {slot.students.map((s) => (
@@ -117,7 +117,6 @@ export default function ClassDetailPage() {
                         s.availableSlots.includes(slotKey(slot.startTime, slot.endTime)) ? <Badge tone="success">Free at this time</Badge> : <span title={s.availableSlots.map(slotKeyLabel).join(", ")}>Other times only</span>
                       ) : <span className="text-slate-400">Not set</span>}
                     </TD>
-                    <TD><StatusBadge status={s.status} /></TD>
                   </TR>
                 ))}
               </TBody>
