@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarPlus, Pencil, Trash2, Wallet } from "lucide-react";
+import { CalendarPlus, FileDown, Pencil, Trash2, Wallet } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
 import { INSTALLMENT_LABEL, date, dateInput, dueLabel, money } from "@/lib/format";
 import type { Installment, StudentDetail } from "@/lib/types";
@@ -30,6 +30,21 @@ export function InstallmentsCard({ student: s, isAdmin, onChanged, onPay }: Prop
   const [note, setNote] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
+
+  // Loaded on demand so the PDF library stays out of the page bundle.
+  async function downloadSlip() {
+    setPdfBusy(true);
+    try {
+      const { downloadFeeSlip } = await import("@/lib/fee-slip-pdf");
+      downloadFeeSlip(s);
+      toast.success("Fee slip downloaded", "Student copy and academy copy on one page.");
+    } catch (err) {
+      toast.error("Could not create the PDF", errorMessage(err));
+    } finally {
+      setPdfBusy(false);
+    }
+  }
 
   const planned = s.installments.reduce((a, i) => a + i.amount, 0);
   const unplanned = Math.round((s.finalPrice - planned) * 100) / 100;
@@ -78,7 +93,18 @@ export function InstallmentsCard({ student: s, isAdmin, onChanged, onPay }: Prop
       <CardHeader
         title="Fee due dates"
         description={unplanned > 0 ? `${money(unplanned)} of the fee has no date yet.` : s.installments.length ? "Whole fee is scheduled." : "No payment plan yet."}
-        action={isAdmin ? <Button size="sm" variant="outline" onClick={() => openForm("new")}><CalendarPlus className="h-4 w-4" /> Add date</Button> : undefined}
+        action={
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={() => void downloadSlip()} loading={pdfBusy}>
+              <FileDown className="h-4 w-4" /> Fee slip PDF
+            </Button>
+            {isAdmin && (
+              <Button size="sm" variant="outline" onClick={() => openForm("new")}>
+                <CalendarPlus className="h-4 w-4" /> Add date
+              </Button>
+            )}
+          </div>
+        }
       />
       {s.installments.length === 0 ? (
         <EmptyState title="No due dates" description={isAdmin ? "Add the dates the student promised to pay on." : undefined} />
