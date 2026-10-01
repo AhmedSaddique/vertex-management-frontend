@@ -66,7 +66,7 @@ export default function LoansPage() {
         <Stat label="Still owed to the company" value={money(sum?.outstanding ?? 0)} hint={`${sum?.openCount ?? 0} loan${sum?.openCount === 1 ? "" : "s"} not cleared`} tone={(sum?.outstanding ?? 0) > 0 ? "danger" : "success"} icon={<HandCoins className="h-5 w-5" />} />
         <Stat label="Total taken" value={money(sum?.taken ?? 0)} hint={`${sum?.count ?? 0} loan${sum?.count === 1 ? "" : "s"} recorded`} />
         <Stat label="Paid back" value={money(sum?.repaid ?? 0)} tone="success" />
-        <Stat label="Cash in hand" value={money(fin?.netCash ?? 0)} hint="After payouts, expenses and open loans" tone="brand" icon={<Wallet className="h-5 w-5" />} />
+        <Stat label="Cash in hand" value={money(fin?.netCash ?? 0)} hint={`After payouts, expenses and ${money(fin?.loansOutstanding ?? 0)} on loan`} tone="brand" icon={<Wallet className="h-5 w-5" />} />
       </div>
 
       <Card>

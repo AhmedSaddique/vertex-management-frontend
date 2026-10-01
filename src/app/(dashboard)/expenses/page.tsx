@@ -12,6 +12,7 @@ import { Alert, Badge, Card, EmptyState, ErrorBlock, LoadingBlock, PageHeader, S
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 import { ExpenseDialog } from "@/components/expenses/expense-dialog";
+import { CashBreakdown } from "@/components/finance/cash-breakdown";
 
 export default function ExpensesPage() {
   const { isAdmin } = useAuth();
@@ -59,12 +60,24 @@ export default function ExpensesPage() {
         actions={<Button onClick={() => setEditing("new")}><Plus className="h-4 w-4" /> Add expense</Button>}
       />
 
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Company share (all time)" value={money(fin?.companyShare ?? 0)} hint="Collected fees minus partner shares" tone="success" />
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <Stat label="Company income" value={money(fin?.companyShare ?? 0)} hint="Share of fees plus trading" tone="success" />
         <Stat label="Total expenses" value={money(sum?.total ?? 0)} hint={`${money(sum?.thisMonth ?? 0)} this month`} tone="warning" />
-        <Stat label="Company balance" value={money(fin?.companyBalance ?? 0)} hint="Company share minus expenses" tone={(fin?.companyBalance ?? 0) < 0 ? "danger" : "brand"} />
-        <Stat label="Cash in hand" value={money(fin?.netCash ?? 0)} hint="Collected minus payouts and expenses" />
+        <Stat label="Company balance" value={money(fin?.companyBalance ?? 0)} hint="Income minus expenses" tone={(fin?.companyBalance ?? 0) < 0 ? "danger" : "brand"} />
+        <Stat
+          label="Loans still out"
+          value={money(fin?.loansOutstanding ?? 0)}
+          hint={(fin?.loansOutstanding ?? 0) > 0 ? "Taken from the company, not paid back" : "Nothing on loan"}
+          tone={(fin?.loansOutstanding ?? 0) > 0 ? "danger" : "neutral"}
+        />
+        <Stat label="Cash in hand" value={money(fin?.netCash ?? 0)} hint="After payouts, expenses and open loans" />
       </div>
+
+      {fin && (
+        <div className="mb-6">
+          <CashBreakdown f={fin} />
+        </div>
+      )}
 
       <Card>
         <div className="grid gap-3 border-b border-slate-100 p-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -8,6 +8,7 @@ import { money } from "@/lib/format";
 import type { Dashboard } from "@/lib/types";
 import { Alert, Card, CardHeader, ErrorBlock, LoadingBlock, PageHeader, Stat, TBody, TD, TH, THead, TR, Table } from "@/components/ui/display";
 import { CHART_COLORS, MonthlyBars } from "@/components/charts/monthly-bars";
+import { CashBreakdown } from "@/components/finance/cash-breakdown";
 
 export default function FinancePage() {
   const { isAdmin } = useAuth();
@@ -38,6 +39,10 @@ export default function FinancePage() {
         <Stat label="Loans outstanding" value={money(f.loansOutstanding)} hint="Taken from the company, not yet paid back" tone={f.loansOutstanding > 0 ? "warning" : "neutral"} />
         <Stat label="Company balance" value={money(f.companyBalance)} hint="Company income minus expenses" tone={f.companyBalance < 0 ? "danger" : "brand"} />
         <Stat label="Owed to partners" value={money(f.partnerBalanceOwed)} hint={`${money(f.partnerShare + f.tradingPartnerShare)} earned - ${money(f.totalPayouts)} paid`} tone={f.partnerBalanceOwed > 0 ? "warning" : "neutral"} />
+      </div>
+
+      <div className="mb-6">
+        <CashBreakdown f={f} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
