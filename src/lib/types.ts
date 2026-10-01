@@ -139,6 +139,8 @@ export interface Student {
   status: StudentStatus;
   classMode: ClassMode;
   enrolledAt: string;
+  /** The day the first class takes place. */
+  classStartDate: string | null;
   notes: string | null;
   availableSlots: string[];
   createdAt: string;

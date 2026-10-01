@@ -17,6 +17,7 @@ export interface StudentFormValues {
   status: "ACTIVE" | "COMPLETED" | "DROPPED";
   classMode: ClassMode;
   enrolledAt: string;
+  classStartDate: string;
   notes: string;
   availableSlots: string[];
   shares: ShareValue[];
@@ -38,6 +39,8 @@ export function initialValues(initial?: Student): StudentFormValues {
     status: initial?.status ?? "ACTIVE",
     classMode: initial?.classMode ?? "PHYSICAL",
     enrolledAt: dateInput(initial?.enrolledAt),
+    // A new student starts today by default; an existing one keeps whatever was saved.
+    classStartDate: initial ? (initial.classStartDate ? dateInput(initial.classStartDate) : "") : dateInput(),
     notes: initial?.notes ?? "",
     availableSlots: initial?.availableSlots ?? [],
     shares: initial?.shares.map((s) => ({ partnerId: s.partnerId, percent: String(s.percent) })) ?? [],
@@ -64,6 +67,7 @@ export function toPayload(v: StudentFormValues, opts: { includeInstallments: boo
     status: v.status,
     classMode: v.classMode,
     enrolledAt: v.enrolledAt ? new Date(v.enrolledAt).toISOString() : undefined,
+    classStartDate: v.classStartDate ? new Date(v.classStartDate).toISOString() : null,
     notes: v.notes || null,
     availableSlots: v.availableSlots,
     shares: v.shares.map((s) => ({ partnerId: s.partnerId, percent: Number(s.percent) || 0 })).filter((s) => s.percent > 0),

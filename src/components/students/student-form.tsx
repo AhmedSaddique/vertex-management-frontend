@@ -30,6 +30,7 @@ export function StudentForm({ initial, subjects, teachers, submitting, error, on
   const [v, setV] = useState<StudentFormValues>(() => initialValues(initial));
   const set = <K extends keyof StudentFormValues>(key: K, value: StudentFormValues[K]) => setV((prev) => ({ ...prev, [key]: value }));
   const partners = useFetch(() => api<Partner[]>("/partners"), []);
+  const [showSplit, setShowSplit] = useState(false);
 
   const activeTeachers = useMemo(() => teachers.filter((t) => t.user.isActive || t.id === initial?.teacherId), [teachers, initial]);
   const teachersForSubject = useMemo(
@@ -86,6 +87,9 @@ export function StudentForm({ initial, subjects, teachers, submitting, error, on
               </Select>
             </Field>
             <Field label="Enrolled on"><Input type="date" value={v.enrolledAt} onChange={(e) => set("enrolledAt", e.target.value)} /></Field>
+            <Field label="First class on" hint="Classes start from this day.">
+              <Input type="date" value={v.classStartDate} onChange={(e) => set("classStartDate", e.target.value)} />
+            </Field>
             <Field label="Available time slots" hint="Tick every slot the student can attend." className="sm:col-span-2">
               <AvailabilityPicker value={v.availableSlots} onChange={(next) => set("availableSlots", next)} />
             </Field>
@@ -104,7 +108,8 @@ export function StudentForm({ initial, subjects, teachers, submitting, error, on
       </div>
 
       <div className="space-y-6">
-        <StudentFeeCard v={v} set={set} />
+        <StudentFeeCard v={v} set={set} showSplit={showSplit} onToggleSplit={() => setShowSplit((x) => !x)} />
+        {showSplit && (
         <Card>
           <CardHeader
             title="Fee share split"
@@ -114,6 +119,7 @@ export function StudentForm({ initial, subjects, teachers, submitting, error, on
             <ShareSplitEditor partners={partners.data ?? []} value={v.shares} onChange={(next) => set("shares", next)} />
           </div>
         </Card>
+        )}
         {error && <Alert tone="error">{error}</Alert>}
         <div className="flex gap-2">
           <Button type="submit" className="flex-1" loading={submitting} disabled={blocked}>{initial ? "Save changes" : "Add student"}</Button>

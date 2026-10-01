@@ -1,5 +1,6 @@
 "use client";
 
+import { Eye, EyeOff } from "lucide-react";
 import { money, percent } from "@/lib/format";
 import { Field, Input } from "@/components/ui/form";
 import { Card, CardHeader } from "@/components/ui/display";
@@ -9,20 +10,36 @@ import { sharesTotal } from "./share-split-editor";
 interface Props {
   v: StudentFormValues;
   set: <K extends keyof StudentFormValues>(key: K, value: StudentFormValues[K]) => void;
+  /** The partner and company breakdown is private, so it stays hidden until asked for. */
+  showSplit: boolean;
+  onToggleSplit: () => void;
 }
 
 export function feeInvalid(v: StudentFormValues) {
   return (Number(v.discount) || 0) > (Number(v.fee) || 0);
 }
 
-export function StudentFeeCard({ v, set }: Props) {
+export function StudentFeeCard({ v, set, showSplit, onToggleSplit }: Props) {
   const finalPrice = finalPriceOf(v);
   const partnersPct = sharesTotal(v.shares);
   const partnersAmt = Math.round(((finalPrice * partnersPct) / 100) * 100) / 100;
 
   return (
     <Card>
-      <CardHeader title="Fee" description="Final price = fee minus discount." />
+      <CardHeader
+        title="Fee"
+        description="Final price = fee minus discount."
+        action={
+          <button
+            type="button"
+            onClick={onToggleSplit}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-700 hover:underline"
+          >
+            {showSplit ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            {showSplit ? "Hide split" : "Show split"}
+          </button>
+        }
+      />
       <div className="space-y-4 p-5">
         <Field label="Course fee" required>
           <Input type="number" min={0} step="0.01" value={v.fee} onChange={(e) => set("fee", e.target.value)} required />
@@ -35,14 +52,18 @@ export function StudentFeeCard({ v, set }: Props) {
             <span className="text-slate-500">Final price</span>
             <span className="font-semibold text-slate-900">{money(finalPrice)}</span>
           </div>
-          <div className="flex justify-between py-1">
-            <span className="text-slate-500">Partners ({percent(partnersPct)})</span>
-            <span className="font-medium text-amber-700">{money(partnersAmt)}</span>
-          </div>
-          <div className="flex justify-between py-1">
-            <span className="text-slate-500">Company ({percent(100 - partnersPct)})</span>
-            <span className="font-medium text-emerald-700">{money(finalPrice - partnersAmt)}</span>
-          </div>
+          {showSplit && (
+            <>
+              <div className="flex justify-between py-1">
+                <span className="text-slate-500">Partners ({percent(partnersPct)})</span>
+                <span className="font-medium text-amber-700">{money(partnersAmt)}</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="text-slate-500">Company ({percent(100 - partnersPct)})</span>
+                <span className="font-medium text-emerald-700">{money(finalPrice - partnersAmt)}</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </Card>

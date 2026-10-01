@@ -44,6 +44,7 @@ export function StudentInfoCard({ student: s }: { student: StudentDetail }) {
       ),
     ],
     ["Enrolled on", date(s.enrolledAt)],
+    ["First class on", s.classStartDate ? date(s.classStartDate) : <span key="nc" className="text-slate-500">Not set</span>],
     ["Notes", s.notes || "-"],
   ];
   return (
