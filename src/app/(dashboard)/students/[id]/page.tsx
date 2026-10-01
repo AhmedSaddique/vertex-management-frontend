@@ -7,7 +7,7 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
-import { admissionNo, date, dueLabel, money } from "@/lib/format";
+import { admissionNo, date, dueLabel, money, remainingLabel } from "@/lib/format";
 import type { Installment, StudentDetail } from "@/lib/types";
 import { Button } from "@/components/ui/form";
 import { ErrorBlock, LoadingBlock, PageHeader, Stat, StatusBadge } from "@/components/ui/display";
@@ -73,7 +73,7 @@ export default function StudentDetailPage() {
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Final price" value={money(s.finalPrice)} hint={`Fee ${money(s.fee)} - discount ${money(s.discount)}`} tone="brand" />
         <Stat label="Paid" value={money(s.paid)} hint={`${paidPct}% of final price`} tone="success" />
-        <Stat label="Remaining" value={money(s.remaining)} hint={s.remaining > 0 ? "Outstanding balance" : "Fully paid"} tone={s.remaining > 0 ? "warning" : "neutral"} />
+        <Stat label="Remaining" value={remainingLabel(s.remaining)} hint={s.remaining > 0 ? "Outstanding balance" : s.remaining === 0 ? "Fully paid" : "Paid more than the discounted fee"} tone={s.remaining > 0 ? "warning" : "neutral"} />
         <Stat
           label="Next fee due"
           value={nextOpen ? money(nextOpen.remaining) : s.remaining > 0 ? "No date" : "Done"}

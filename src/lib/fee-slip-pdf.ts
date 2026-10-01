@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-import { INSTALLMENT_LABEL, date, money } from "./format";
+import { INSTALLMENT_LABEL, date, money, remainingLabel } from "./format";
 import type { StudentDetail } from "./types";
 
 const BRAND: [number, number, number] = [79, 70, 229];
@@ -80,7 +80,7 @@ export function buildFeeSlip(s: StudentDetail): jsPDF {
         3: { halign: "right" },
         4: { halign: "right" },
       },
-      foot: [["", "Total", money(s.finalPrice), money(s.paid), money(s.remaining), ""]],
+      foot: [["", "Total", money(s.finalPrice), money(s.paid), remainingLabel(s.remaining), ""]],
       footStyles: { fillColor: [248, 250, 252], textColor: INK, fontStyle: "bold", halign: "right" },
     });
 
@@ -92,7 +92,7 @@ export function buildFeeSlip(s: StudentDetail): jsPDF {
     doc.setTextColor(...INK);
     doc.text(`Total fee: ${money(s.finalPrice)}`, margin, afterTable + 7);
     doc.text(`Received: ${money(s.paid)}`, margin + 60, afterTable + 7);
-    doc.text(`Remaining: ${money(s.remaining)}`, margin + 115, afterTable + 7);
+    doc.text(`Remaining: ${remainingLabel(s.remaining)}`, margin + 115, afterTable + 7);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);

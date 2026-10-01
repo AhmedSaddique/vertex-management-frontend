@@ -179,3 +179,13 @@ export const LOAN_STATUS_TONE: Record<string, "danger" | "warning" | "success"> 
   PARTIAL: "warning",
   CLEARED: "success",
 };
+
+/**
+ * A balance that is zero or below means nothing is owed. It can go below zero when a
+ * discount is applied after the student has already paid.
+ */
+export function remainingLabel(remaining: number): string {
+  if (remaining > 0) return money(remaining);
+  if (remaining === 0) return "Fully paid";
+  return `Overpaid ${money(-remaining)}`;
+}

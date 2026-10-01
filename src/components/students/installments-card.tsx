@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CalendarPlus, FileDown, Pencil, Trash2, Wallet } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
-import { INSTALLMENT_LABEL, date, dateInput, dueLabel, money } from "@/lib/format";
+import { INSTALLMENT_LABEL, date, dateInput, dueLabel, money, remainingLabel } from "@/lib/format";
 import type { Installment, StudentDetail } from "@/lib/types";
 import { Button, Field, Input } from "@/components/ui/form";
 import { Badge, Card, CardHeader, EmptyState } from "@/components/ui/display";
@@ -149,7 +149,7 @@ export function InstallmentsCard({ student: s, isAdmin, onChanged, onPay }: Prop
       >
         <form id="inst-form" onSubmit={save} className="space-y-4">
           <Field label="Due date" required><Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required /></Field>
-          <Field label="Amount" required hint={`Remaining fee ${money(s.remaining)}`}><Input type="number" min={0} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} required /></Field>
+          <Field label="Amount" required hint={`Remaining fee ${remainingLabel(s.remaining)}`}><Input type="number" min={0} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} required /></Field>
           <Field label="Note"><Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional" /></Field>
         </form>
       </Dialog>

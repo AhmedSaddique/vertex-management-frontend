@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { HandCoins, PiggyBank, TrendingUp, Wallet } from "lucide-react";
-import { CLASS_MODE_LABEL, admissionNo, money, percent } from "@/lib/format";
+import { CLASS_MODE_LABEL, admissionNo, money, percent, remainingLabel } from "@/lib/format";
 import type { PartnerSummary } from "@/lib/types";
 import { Card, CardHeader, EmptyState, Stat, StatusBadge, TBody, TD, TH, THead, TR, Table } from "@/components/ui/display";
 import { CHART_COLORS, MonthlyBars } from "@/components/charts/monthly-bars";
@@ -77,7 +77,7 @@ export function PartnerEarnings({ summary, own }: { summary: PartnerSummary; own
                   <TD>{s.subject.name}<p className="text-xs text-slate-500">{s.teacher.user.name} · {CLASS_MODE_LABEL[s.classMode]}</p></TD>
                   <TD className="text-right">{money(s.finalPrice)}</TD>
                   <TD className="text-right text-emerald-700">{money(s.paid)}</TD>
-                  <TD className={`text-right ${s.remaining > 0 ? "text-amber-700" : "text-slate-400"}`}>{money(s.remaining)}</TD>
+                  <TD className={`text-right ${s.remaining > 0 ? "text-amber-700" : "text-slate-400"}`}>{remainingLabel(s.remaining)}</TD>
                   <TD className="text-right">{percent(s.percent)}</TD>
                   <TD className="text-right font-medium text-brand-700">{money(s.earned)} <span className="text-xs font-normal text-slate-400">/ {money(s.projected)}</span></TD>
                   <TD><StatusBadge status={s.status} /></TD>

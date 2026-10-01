@@ -7,7 +7,7 @@ import { Plus, Search } from "lucide-react";
 import { api } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
-import { CLASS_MODES, CLASS_MODE_LABEL, CLASS_MODE_TONE, INSTALLMENT_LABEL, admissionNo, date, dueLabel, money, percent } from "@/lib/format";
+import { CLASS_MODES, CLASS_MODE_LABEL, CLASS_MODE_TONE, INSTALLMENT_LABEL, admissionNo, date, dueLabel, money, percent, remainingLabel } from "@/lib/format";
 import type { StudentListResponse, Subject, Teacher } from "@/lib/types";
 import { Button, Input, Select } from "@/components/ui/form";
 import {
@@ -154,7 +154,7 @@ export default function StudentsPage() {
                     <TD><Badge tone={CLASS_MODE_TONE[s.classMode]}>{CLASS_MODE_LABEL[s.classMode]}</Badge></TD>
                     <TD className="text-right font-medium text-slate-900">{money(s.finalPrice)}</TD>
                     <TD className="text-right text-emerald-700">{money(s.paid)}</TD>
-                    <TD className={`text-right ${s.remaining > 0 ? "font-medium text-amber-700" : "text-slate-400"}`}>{money(s.remaining)}</TD>
+                    <TD className={`text-right ${s.remaining > 0 ? "font-medium text-amber-700" : "text-slate-400"}`}>{remainingLabel(s.remaining)}</TD>
                     <TD>
                       {s.remaining <= 0 ? (
                         <Badge tone="success">Fully paid</Badge>
