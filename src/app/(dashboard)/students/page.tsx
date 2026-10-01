@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { Eye, EyeOff, Plus, Search } from "lucide-react";
 import { api } from "@/lib/api";
 import { useFetch } from "@/lib/use-fetch";
 import { useAuth } from "@/lib/auth-context";
 import { CLASS_MODES, CLASS_MODE_LABEL, CLASS_MODE_TONE, INSTALLMENT_LABEL, admissionNo, date, dueLabel, money, percent, remainingLabel } from "@/lib/format";
 import type { StudentListResponse, Subject, Teacher } from "@/lib/types";
 import { Button, Input, Select } from "@/components/ui/form";
+import { PrivateValue } from "@/components/ui/private-value";
 import {
   Badge,
   Card,
@@ -36,6 +37,7 @@ export default function StudentsPage() {
   const [teacherId, setTeacherId] = useState("");
   const [status, setStatus] = useState("");
   const [classMode, setClassMode] = useState("");
+  const [showAmounts, setShowAmounts] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(search.trim()), 300);
@@ -58,22 +60,28 @@ export default function StudentsPage() {
         title={isAdmin ? "Students" : "My students"}
         description="Every enrolled student with fee, discount, payments and remaining balance."
         actions={
-          isAdmin && (
-            <Link href="/students/new">
-              <Button>
-                <Plus className="h-4 w-4" /> Add student
-              </Button>
-            </Link>
-          )
+          <>
+            <Button variant="outline" onClick={() => setShowAmounts((v) => !v)}>
+              {showAmounts ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showAmounts ? "Hide amounts" : "Show amounts"}
+            </Button>
+            {isAdmin && (
+              <Link href="/students/new">
+                <Button>
+                  <Plus className="h-4 w-4" /> Add student
+                </Button>
+              </Link>
+            )}
+          </>
         }
       />
 
       {summary && (
         <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Stat label="Students" value={summary.count} />
-          <Stat label="Total final price" value={money(summary.totalFinalPrice)} tone="brand" />
-          <Stat label="Collected" value={money(summary.totalPaid)} tone="success" />
-          <Stat label="Remaining" value={money(summary.totalRemaining)} tone={summary.totalRemaining > 0 ? "warning" : "neutral"} />
+          <Stat label="Students" value={<PrivateValue hidden={!showAmounts}>{summary.count}</PrivateValue>} />
+          <Stat label="Total final price" value={<PrivateValue hidden={!showAmounts}>{money(summary.totalFinalPrice)}</PrivateValue>} tone="brand" />
+          <Stat label="Collected" value={<PrivateValue hidden={!showAmounts}>{money(summary.totalPaid)}</PrivateValue>} tone="success" />
+          <Stat label="Remaining" value={<PrivateValue hidden={!showAmounts}>{money(summary.totalRemaining)}</PrivateValue>} tone={summary.totalRemaining > 0 ? "warning" : "neutral"} />
         </div>
       )}
 
@@ -152,10 +160,11 @@ export default function StudentsPage() {
                       <p className="text-xs text-slate-500">{s.teacher.user.name} · partners {percent(s.partnerPercent)} · co. {percent(s.companyPercent)}</p>
                     </TD>
                     <TD><Badge tone={CLASS_MODE_TONE[s.classMode]}>{CLASS_MODE_LABEL[s.classMode]}</Badge></TD>
-                    <TD className="text-right font-medium text-slate-900">{money(s.finalPrice)}</TD>
-                    <TD className="text-right text-emerald-700">{money(s.paid)}</TD>
-                    <TD className={`text-right ${s.remaining > 0 ? "font-medium text-amber-700" : "text-slate-400"}`}>{remainingLabel(s.remaining)}</TD>
+                    <TD className="text-right font-medium text-slate-900"><PrivateValue hidden={!showAmounts}>{money(s.finalPrice)}</PrivateValue></TD>
+                    <TD className="text-right text-emerald-700"><PrivateValue hidden={!showAmounts}>{money(s.paid)}</PrivateValue></TD>
+                    <TD className={`text-right ${s.remaining > 0 ? "font-medium text-amber-700" : "text-slate-400"}`}><PrivateValue hidden={!showAmounts}>{remainingLabel(s.remaining)}</PrivateValue></TD>
                     <TD>
+                      <PrivateValue hidden={!showAmounts}>
                       {s.remaining <= 0 ? (
                         <Badge tone="success">Fully paid</Badge>
                       ) : s.nextDue ? (
@@ -166,6 +175,7 @@ export default function StudentsPage() {
                       ) : (
                         <span className="text-xs text-amber-700">No date set · {pct}% paid</span>
                       )}
+                      </PrivateValue>
                     </TD>
                     <TD><StatusBadge status={s.status} /></TD>
                     <TD className="whitespace-nowrap text-slate-500">{date(s.enrolledAt)}</TD>
