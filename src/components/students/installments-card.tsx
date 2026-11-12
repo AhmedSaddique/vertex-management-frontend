@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarPlus, FileDown, Pencil, Trash2, Wallet } from "lucide-react";
+import { CalendarPlus, FileDown, Mail, Pencil, Trash2, Wallet } from "lucide-react";
 import { api, errorMessage } from "@/lib/api";
 import { INSTALLMENT_LABEL, date, dateInput, dueLabel, money, remainingLabel } from "@/lib/format";
 import type { Installment, StudentDetail } from "@/lib/types";
@@ -31,6 +31,25 @@ export function InstallmentsCard({ student: s, isAdmin, onChanged, onPay }: Prop
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [pdfBusy, setPdfBusy] = useState(false);
+  const [reminderBusy, setReminderBusy] = useState(false);
+
+  // Emails the student what is overdue and what is still owed.
+  async function sendReminder() {
+    setReminderBusy(true);
+    try {
+      const res = await api<{ studentEmailed: boolean; teamEmailed: boolean; skipped?: string }>(
+        `/students/${s.id}/reminder`,
+        { method: "POST" },
+      );
+      if (res.studentEmailed) toast.success("Reminder sent", `${s.name} has been emailed the outstanding amount.`);
+      else if (res.teamEmailed) toast.info("Reminder not sent to the student", res.skipped ?? "The office copy went out.");
+      else toast.error("Nothing was sent", res.skipped ?? "Email is not configured on the server.");
+    } catch (err) {
+      toast.error("Could not send the reminder", errorMessage(err));
+    } finally {
+      setReminderBusy(false);
+    }
+  }
 
   // Loaded on demand so the PDF library stays out of the page bundle.
   async function downloadSlip() {
@@ -98,6 +117,11 @@ export function InstallmentsCard({ student: s, isAdmin, onChanged, onPay }: Prop
             <Button size="sm" variant="outline" onClick={() => void downloadSlip()} loading={pdfBusy}>
               <FileDown className="h-4 w-4" /> Fee slip PDF
             </Button>
+            {isAdmin && s.remaining > 0 && (
+              <Button size="sm" variant="outline" onClick={() => void sendReminder()} loading={reminderBusy}>
+                <Mail className="h-4 w-4" /> Send reminder
+              </Button>
+            )}
             {isAdmin && (
               <Button size="sm" variant="outline" onClick={() => openForm("new")}>
                 <CalendarPlus className="h-4 w-4" /> Add date
